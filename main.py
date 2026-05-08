@@ -48,6 +48,9 @@ def translate_from_word(word):
     words = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]
     return words.index(word.capitalize())
 
+def translate_to_num(list):
+    return f"{''.join(map(str, list))}"
+
 def create_field():
     return [[2 for _ in range(10)] for _ in range(10)]
 
@@ -122,7 +125,7 @@ def set_ship_2(coordinate, direction, num: int, is_player: bool):
                 if y + num > 1: raise IndexError()
             case _: raise IndexError() 
 
-        for n in range(num):
+        for n in range(num): #исправить, убрать цикл, делать как x+n 
             change_cell(f"{x}{y}{1}")
             if d == ">": x += 1
             elif d == "<": x -= 1
@@ -138,7 +141,7 @@ def set_ship_2(coordinate, direction, num: int, is_player: bool):
 
 def bot_move(bot_name):
     if bot_name in ["greenhorn", "random", "1"]:
-        pass
+        fire(translate_to_num(bot.greenhorn(field)))
 
     elif bot_name in ["harpooner", "hunter", "2"]:
         pass
