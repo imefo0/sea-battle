@@ -61,6 +61,9 @@ def translate_to_num(list):
 def create_field():
     return [[2 for _ in range(10)] for _ in range(10)]
 
+def add_part_of_ship(ships: list, ship_idx: int, part: list):
+    ships[ship_idx].insert(-1, part)
+    ships[ship_idx][1] += 1
 
 # печатаем поле
 def print_field(field):
