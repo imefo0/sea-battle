@@ -1,9 +1,10 @@
-import random
+import random, time, os
+import main
 
 def greenhorn(field): # юнга, рандом
-    return [random.randint(0, 9), random.randint(0, 9)]
+    pass
 
-def harpooner(): # гарпунер, охотник
+def harpooner(field): # гаупунер, охотник
     pass
 
 def navigator(): # штурман, шахматный
