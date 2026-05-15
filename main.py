@@ -63,7 +63,8 @@ def create_field():
 
 def add_part_of_ship(ships: list, ship_idx: int, part: list):
     ships[ship_idx].insert(-1, part)
-    ships[ship_idx][1] += 1
+    ships[ship_idx][-1] += 1
+    return True
 
 # печатаем поле
 def print_field(field):
@@ -113,7 +114,7 @@ def fire(cell):
     
     return True
 
-def set_ship1(cell1, cell2, field):
+def set_ship1(cell1, cell2, field, ships):
     dx = abs(cell1[0] - cell2[0])
     dy = abs(cell1[1] - cell2[1])
 
@@ -124,8 +125,12 @@ def set_ship1(cell1, cell2, field):
 
     cell = list(cell1 if cell1[axis] < cell2[axis] else cell2)
 
+    # создаем корабль
+    ships.append([0])
+
     for _ in range(steps + 1):
         change_cell(cell, 0, field)
+        add_part_of_ship(ships, -1, [*cell, 1])
         cell[axis] += 1
     
     return True
@@ -135,7 +140,7 @@ def set_ship1(cell1, cell2, field):
 # куда будем его пихать
 # coordinate -> cell
 # direction -> dir
-def set_ship2(cell, dir, num, field):    
+def set_ship2(cell, dir, num, field, ships):    
     # dir принимает udlr и ^v<>
     # для определения смещения dir
     delta = {
@@ -165,10 +170,14 @@ def set_ship2(cell, dir, num, field):
             final_x > 10, final_y > 10]):
         return False
 
+    # создаем новый корабль
+    ships.append([0])
+
     # заменяем каждую клетку которую надо
     # на корабль
     for _ in range(num):
         change_cell([x, y], 0, field)
+        add_part_of_ship(ships, -1, [x, y, 1])
         x += dx
         y += dy
 
@@ -178,17 +187,24 @@ def set_ship2(cell, dir, num, field):
 
 # нормально сделать чтобы корды были везде через [x, y], 
 # а не как попало
+
+ships = []
 while True:
     print_field(field)
 
-    #raw_cell, dir, num = input().split(" ")
-    #cell = [int(i) for i in raw_cell.split(",")]
-    #print(set_ship2(cell, dir, int(num), field))
+    # raw_cell, dir, num = input().split(" ")
+    # cell = [int(i) for i in raw_cell.split(",")]
+    # print(set_ship2(cell, dir, int(num), field, ships))
+    # print(ships)
 
     raw_cell1, raw_cell2 = input().split(" ")
     cell1 = [int(i) for i in raw_cell1.split(",")]
     cell2 = [int(i) for i in raw_cell2.split(",")]
-    print(set_ship1(cell1, cell2, field))
+    print(set_ship1(cell1, cell2, field, ships))
+    print(ships)
 
-    time.sleep(0.5)
+    time.sleep(5)
     clear()
+
+# убрать баг при размещении корабль на корабль 
+# и столконовение кораблей
