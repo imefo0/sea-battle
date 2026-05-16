@@ -64,8 +64,30 @@ def greenhorn(field, ships): # юнга, рандом
 
     return True
 
-def harpooner(field): # гаупунер, охотник
-    pass
+def harpooner(field, ships): # гаупунер, охотник
+    while True:
+        # пытаемся стрельнуть в рандомную координату
+        x, y = [random.randint(0, 9), random.randint(0, 9)]
+
+        # если попали
+        if field[y][x] == 0:
+            field[y][x] = 4
+    
+            # изменение в списке кораблей
+            ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+            ships[ship_idx][part_idx][2] = False
+            ships[ship_idx][-1] -= 1
+
+            # если убили корабль
+            if ships[ship_idx][-1] == 0:
+                if not clear_ship(field, ships, ship_idx): return False
+
+        # если промахнулись
+        elif field[y][x] == 2:
+            field[y][x] = 3
+            break
+
+    return True
 
 def navigator(field): # штурман, шахматный
     pass
