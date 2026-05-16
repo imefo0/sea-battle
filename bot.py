@@ -55,12 +55,11 @@ def greenhorn(field, ships): # юнга, рандом
             # если убили корабль
             if ships[ship_idx][-1] == 0:
                 if not clear_ship(field, ships, ship_idx): return False
-            
-            break
 
         # если мимо
         elif field[y][x] == 2:
             field[y][x] = 3
+            break
 
     return True
 
