@@ -18,6 +18,11 @@ import main
 # второй корабль - корабль с А2 до Б2, полностью жив
 # третий корабль - корабль на К9, мертв
 
+# searching - поиск через рандом
+# attack - атака
+harpooner_mode = "searching"
+cells = []
+
 def find_ship_by_cell(ships, cell):
     x, y = list(cell)
     for ship_idx, ship in enumerate(ships):
@@ -39,33 +44,6 @@ def clear_ship(field, ships, ship_idx):
 
 def greenhorn(field, ships): # юнга, рандом
     while True:
-        # выбор рандомных координат
-        x, y = [random.randint(0, 9), random.randint(0, 9)]
-
-        # стреляем
-        # если попали
-        if field[y][x] == 0:
-            field[y][x] = 4
-
-            # изменение в списке кораблей
-            ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
-            ships[ship_idx][part_idx][2] = False
-            ships[ship_idx][-1] -= 1
-
-            # если убили корабль
-            if ships[ship_idx][-1] == 0:
-                if not clear_ship(field, ships, ship_idx): return False
-            
-            break
-
-        # если мимо
-        elif field[y][x] == 2:
-            field[y][x] = 3
-
-    return True
-
-def harpooner(field, ships): # гаупунер, охотник
-    while True:
         # пытаемся стрельнуть в рандомную координату
         x, y = [random.randint(0, 9), random.randint(0, 9)]
 
@@ -86,6 +64,92 @@ def harpooner(field, ships): # гаупунер, охотник
         elif field[y][x] == 2:
             field[y][x] = 3
             break
+
+    return True
+
+def harpooner(field, ships): # гаупунер, охотник
+    dirs = [
+                (0, 1), (0, -1),
+                (1, 0), (-1, 0)
+            ]
+
+    while True:
+        if harpooner_mode == "searching":
+            # выбор рандомных координат
+            x, y = [random.randint(0, 9), random.randint(0, 9)]
+
+            # стреляем
+            # если попали
+            if field[y][x] == 0:
+                field[y][x] = 4
+
+                # изменение в списке кораблей
+                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+                ships[ship_idx][part_idx][2] = False
+                ships[ship_idx][-1] -= 1
+
+                # если убили корабль
+                if ships[ship_idx][-1] == 0:
+                    if clear_ship(field, ships, ship_idx):
+                        harpooner_mode = "searching"
+                    else: return False
+
+                harpooner_mode = "attack"
+                cells.append([x, y])
+                continue
+
+            # если мимо
+            elif field[y][x] == 2:
+                field[y][x] = 3
+                break
+        
+        elif harpooner_mode == "attack":
+            x, y = cells[0]
+
+            if not any([0 <= x <= 9, 0 <= y <= 9]):
+                return False
+            
+            # есть направления, которые надо убирать чтобы понять куда надо двигаться
+            # и короче если мы двинулись например по (1, 0) и там будет промах, то удаляем
+
+            # если dirs пустой - вернуть false или break с searching
+
+            dirs = [
+                (0, 1), (0, -1),
+                (1, 0), (-1, 0)
+            ]
+
+            dir = dirs[0]
+            if not (0 <= x + dir[0] <= 9 and 0 <= y + dir[1] <= 9):
+                dirs.remove(dir)
+                continue
+            
+            # если попали
+            if field[y][x] == 0:
+                field[y][x] = 4
+
+                # изменение в списке кораблей
+                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+                ships[ship_idx][part_idx][2] = False
+                ships[ship_idx][-1] -= 1
+
+                # если убили корабль
+                if ships[ship_idx][-1] == 0:
+                    if clear_ship(field, ships, ship_idx):
+                        harpooner_mode = "searching"
+                    else: return False
+
+            # если промах
+            elif field[y][x] == 2:
+                # меняем на точку
+                field[y][x] = 3
+
+                dirs.remove(dir)
+                break
+
+        else: 
+            harpooner_mode = "searching"
+            return False
 
     return True
 
