@@ -136,8 +136,7 @@ def admiral(field, ships): # адмирал, тепловая карта
         else: 
             del pos[point]
             continue
-    return [True, heat_map]
-
+    return True
 
 def master_seawolf(field): # мастер Морской волк, карта + история
     pass
