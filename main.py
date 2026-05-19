@@ -130,7 +130,7 @@ def set_ship1(cell1, cell2, field, ships):
 
     for _ in range(steps + 1):
         change_cell(cell, 0, field)
-        add_part_of_ship(ships, -1, [*cell, 1])
+        add_part_of_ship(ships, -1, [*cell, True])
         cell[axis] += 1
     
     return True
@@ -177,7 +177,7 @@ def set_ship2(cell, dir, num, field, ships):
     # на корабль
     for _ in range(num):
         change_cell([x, y], 0, field)
-        add_part_of_ship(ships, -1, [x, y, 1])
+        add_part_of_ship(ships, -1, [x, y, True])
         x += dx
         y += dy
 
@@ -188,23 +188,23 @@ def set_ship2(cell, dir, num, field, ships):
 # нормально сделать чтобы корды были везде через [x, y], 
 # а не как попало
 
-ships = []
-while True:
-    print_field(field)
+# ships = []
+# while True:
+#     print_field(field)
 
-    # raw_cell, dir, num = input().split(" ")
-    # cell = [int(i) for i in raw_cell.split(",")]
-    # print(set_ship2(cell, dir, int(num), field, ships))
-    # print(ships)
+#     # raw_cell, dir, num = input().split(" ")
+#     # cell = [int(i) for i in raw_cell.split(",")]
+#     # print(set_ship2(cell, dir, int(num), field, ships))
+#     # print(ships)
 
-    raw_cell1, raw_cell2 = input().split(" ")
-    cell1 = [int(i) for i in raw_cell1.split(",")]
-    cell2 = [int(i) for i in raw_cell2.split(",")]
-    print(set_ship1(cell1, cell2, field, ships))
-    print(ships)
+#     raw_cell1, raw_cell2 = input().split(" ")
+#     cell1 = [int(i) for i in raw_cell1.split(",")]
+#     cell2 = [int(i) for i in raw_cell2.split(",")]
+#     print(set_ship1(cell1, cell2, field, ships))
+#     print(ships)
 
-    time.sleep(5)
-    clear()
+#     time.sleep(5)
+#     clear()
 
 # убрать баг при размещении корабль на корабль 
 # и столконовение кораблей

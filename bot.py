@@ -23,7 +23,7 @@ import main
 harpooner_mode = "searching"
 cells = []
 directions = [
-    (1, 0), (-1, 0)
+    (1, 0), (-1, 0),
     (0, 1), (0, -1)
 ]
 
@@ -72,8 +72,11 @@ def greenhorn(field, ships): # юнга, рандом
     return True
 
 def harpooner(field, ships): # гаупунер, охотник
+    global directions, harpooner_mode, cells, x, y
+
     # повторять бесконечно:
     while True:
+        # import pdb; pdb.set_trace()
         # если режим поиска, то
         if harpooner_mode == "searching":
             # выбираем случайное число для x, y от 0 до 9
@@ -93,7 +96,10 @@ def harpooner(field, ships): # гаупунер, охотник
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
-                    cells = []
+                    cells.clear()
+                    harpooner_mode = "searching"
+                    x, y = None, None
+                    break
                 cells.append([x, y])
                 harpooner_mode = "attack"
 #             продолжить
@@ -116,14 +122,16 @@ def harpooner(field, ships): # гаупунер, охотник
 #         если x + dx > 9, то удалить направление (1, 0)
 #         если y + dy < 0, то удалить направление (0, -1)
 #         если y + dy > 9, то удалить направление (0, 1)
-
-            dx, dy = directions[random.randint(0, len(directions)-1)]
+            # if len(directions) == 0:
+                # exit("len(direction) = 0")
+            dx, dy = random.choice(directions)
 #         выбираем случайное направление
 #         dx, dy равен случайному направлению
 
             if field[y + dy][x + dx] == 0:
                 field[y + dy][x + dx] = 4
-                cells.append([x+dx, y+dy])
+                x, y = x+dx, y+dy
+                cells.append([x, y])
 #         стреляем в клетку [x+dx, y+dy]
 #         если попали в клетку, то
 #             добавить [x+dx, y+dy] в клетки
@@ -139,7 +147,7 @@ def harpooner(field, ships): # гаупунер, охотник
                         directions.remove((0, 1))
                     if (0, -1) in directions: 
                         directions.remove((0, -1))
-                else:
+                if dy != 0:
                     if (1, 0) in directions:
                         directions.remove((1, 0))
                     if (-1, 0) in directions: 
@@ -157,7 +165,10 @@ def harpooner(field, ships): # гаупунер, охотник
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
-                    cells = []
+                    cells.clear()
+                    harpooner_mode = "searching"
+                    x, y = None, None
+                    break
 #         (необязательно)
 #         если попали в уже атакованную клетку, то продолжить
             elif field[y + dy][x + dx] == 2:
@@ -169,92 +180,6 @@ def harpooner(field, ships): # гаупунер, охотник
 #             прервать
 # вернуть да
     return True
-"""    dirs = [
-                (0, 1), (0, -1),
-                (1, 0), (-1, 0)
-            ]
-
-    while True:
-        if harpooner_mode == "searching":
-            # выбор рандомных координат
-            x, y = [random.randint(0, 9), random.randint(0, 9)]
-
-            # стреляем
-            # если попали
-            if field[y][x] == 0:
-                field[y][x] = 4
-
-                # изменение в списке кораблей
-                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
-                ships[ship_idx][part_idx][2] = False
-                ships[ship_idx][-1] -= 1
-
-                # если убили корабль
-                if ships[ship_idx][-1] == 0:
-                    if clear_ship(field, ships, ship_idx):
-                        harpooner_mode = "searching"
-                    else: return False
-
-                harpooner_mode = "attack"
-                cells.append([x, y])
-                continue
-
-            # если мимо
-            elif field[y][x] == 2:
-                field[y][x] = 3
-                break
-        
-        elif harpooner_mode == "attack":
-            x, y = cells[0]
-
-            if not any([0 <= x <= 9, 0 <= y <= 9]):
-                return False
-            
-            # есть направления, которые надо убирать чтобы понять куда надо двигаться
-            # и короче если мы двинулись например по (1, 0) и там будет промах, то удаляем
-
-            # если dirs пустой - вернуть false или break с searching
-
-            dirs = [
-                (0, 1), (0, -1),
-                (1, 0), (-1, 0)
-            ]
-
-            dir = dirs[0]
-            if not (0 <= x + dir[0] <= 9 and 0 <= y + dir[1] <= 9):
-                dirs.remove(dir)
-                continue
-            
-            # если попали
-            if field[y][x] == 0:
-                field[y][x] = 4
-
-                # изменение в списке кораблей
-                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
-                ships[ship_idx][part_idx][2] = False
-                ships[ship_idx][-1] -= 1
-
-                # если убили корабль
-                if ships[ship_idx][-1] == 0:
-                    if clear_ship(field, ships, ship_idx):
-                        harpooner_mode = "searching"
-                    else: return False
-
-            # если промах
-            elif field[y][x] == 2:
-                # меняем на точку
-                field[y][x] = 3
-
-                dirs.remove(dir)
-                break
-
-        else: 
-            harpooner_mode = "searching"
-            return False
-
-    return True"""
-
-
 
 def navigator(field): # штурман, шахматный
     pass
@@ -267,3 +192,28 @@ def master_seawolf(field): # мастер Морской волк, карта + 
 
 # В играх сложность ботов обычно строится как «слоеный пирог»:
 # каждый следующий уровень включает в себя фишки предыдущего.
+
+ships = []
+
+main.set_ship1([1,1], [1,1], main.field, ships)
+main.set_ship1([3,2], [5,2], main.field, ships)
+main.set_ship1([7,2], [8,2], main.field, ships)
+main.set_ship1([1,3], [1,4], main.field, ships)
+main.set_ship1([3,4], [6,4], main.field, ships)
+
+main.set_ship1([8,4], [8,5], main.field, ships)
+main.set_ship1([1,6], [3,6], main.field, ships)
+main.set_ship1([5,6], [5,6], main.field, ships)
+main.set_ship1([7,7], [7,7], main.field, ships)
+main.set_ship1([4,8], [4,8], main.field, ships)
+
+os.system("clear")
+num = 0
+
+while True:
+    harpooner(main.field, ships)
+    print(f"охотник делает ход {num}...")
+    main.print_field(main.field)
+    # time.sleep(0.5)
+    # os.system("clear")
+    num += 1
