@@ -22,6 +22,10 @@ import main
 # attack - атака
 harpooner_mode = "searching"
 cells = []
+directions = [
+    (1, 0), (-1, 0)
+    (0, 1), (0, -1)
+]
 
 def find_ship_by_cell(ships, cell):
     x, y = list(cell)
@@ -68,7 +72,104 @@ def greenhorn(field, ships): # юнга, рандом
     return True
 
 def harpooner(field, ships): # гаупунер, охотник
-    dirs = [
+    # повторять бесконечно:
+    while True:
+        # если режим поиска, то
+        if harpooner_mode == "searching":
+            # выбираем случайное число для x, y от 0 до 9
+            x, y = [random.randint(0, 9), random.randint(0, 9)]
+            # если попали, то
+            if field[y][x] == 0:
+                field[y][x] = 4
+
+                # измененить список кораблей
+                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+                ships[ship_idx][part_idx][2] = False
+                ships[ship_idx][-1] -= 1
+                
+                # если убили, то
+                if ships[ship_idx][-1] == 0:
+                    clear_ship(field, ships, ship_idx)
+                    directions = [
+                        (1, 0), (-1, 0), (0, 1), (0, -1)
+                    ]
+                    cells = []
+                cells.append([x, y])
+                harpooner_mode = "attack"
+#             продолжить
+                continue
+
+#         иначе если мимо, то
+            if field[y][x] == 2:
+                field[y][x] = 3
+#             прервать
+                break
+    
+#     иначе если режим атаки, то
+        if harpooner_mode == "attack":
+            if x - 1 < 0: directions.remove((-1, 0))
+            if x + 1 > 9: directions.remove((1, 0))
+            if y - 1 < 0: directions.remove((0, -1))
+            if y + 1 > 9: directions.remove((0, 1))
+#         (оставить, но без dx и dy)
+#         если x + dx < 0, то удалить напраление (-1, 0)
+#         если x + dx > 9, то удалить направление (1, 0)
+#         если y + dy < 0, то удалить направление (0, -1)
+#         если y + dy > 9, то удалить направление (0, 1)
+
+            dx, dy = directions[random.randint(0, len(directions)-1)]
+#         выбираем случайное направление
+#         dx, dy равен случайному направлению
+
+            if field[y + dy][x + dx] == 0:
+                field[y + dy][x + dx] = 4
+                cells.append([x+dx, y+dy])
+#         стреляем в клетку [x+dx, y+dy]
+#         если попали в клетку, то
+#             добавить [x+dx, y+dy] в клетки
+
+#             изменить список кораблей
+                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+                ships[ship_idx][part_idx][2] = False
+                ships[ship_idx][-1] -= 1
+#             (делать через словарь)
+#             если направление (1, 0) или (-1, 0), то
+                if dx != 0:
+                    if (0, 1) in directions:
+                        directions.remove((0, 1))
+                    if (0, -1) in directions: 
+                        directions.remove((0, -1))
+                else:
+                    if (1, 0) in directions:
+                        directions.remove((1, 0))
+                    if (-1, 0) in directions: 
+                        directions.remove((-1, 0))
+#                 удалить (0, 1) и (0, -1)
+#             иначе если направлеие по y, то
+#                 удалить по аналогии, удалить направления по x
+                
+#             если убили, то
+#                 сменить корабль на убитый
+#                 теперь режим поиска
+#                 сбросить направления и клетки
+                if ships[ship_idx][-1] == 0:
+                    clear_ship(field, ships, ship_idx)
+                    directions = [
+                        (1, 0), (-1, 0), (0, 1), (0, -1)
+                    ]
+                    cells = []
+#         (необязательно)
+#         если попали в уже атакованную клетку, то продолжить
+            elif field[y + dy][x + dx] == 2:
+                field[y + dy][x + dx] = 3
+                directions.remove((dx, dy))
+                break
+#         если мимо, то
+#             удалить данное направление
+#             прервать
+# вернуть да
+    return True
+"""    dirs = [
                 (0, 1), (0, -1),
                 (1, 0), (-1, 0)
             ]
@@ -151,7 +252,9 @@ def harpooner(field, ships): # гаупунер, охотник
             harpooner_mode = "searching"
             return False
 
-    return True
+    return True"""
+
+
 
 def navigator(field): # штурман, шахматный
     pass
