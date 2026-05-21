@@ -8,16 +8,6 @@ import main
 # 4 - попал 💥
 # 5 - убит ❌️
 
-# пример ships:
-# [ 
-#   [[3, 0, True], [3, 1, False], [3, 2, False], 1], 
-#   [[0, 1, True], [1, 1, True], 2],
-#   [[9, 9, False], 0]
-# ] - три корабля:
-# первый корабль - корабль с Г1 до Г3, где одна палуба жива (Г1)
-# второй корабль - корабль с А2 до Б2, полностью жив
-# третий корабль - корабль на К9, мертв
-
 heat_map = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -204,6 +194,23 @@ def navigator(field): # штурман, шахматный
 
 def admiral(field, ships): # адмирал, тепловая карта
     while True:
+        res = True
+        for i in field:
+            if 0 in i: res = False
+        if res:
+            return False
+        heat_map = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]   
         for len_ship in [2, 3, 4]:
             for dx, dy in [(1, 0), (0, 1)]:
                 for y in range(0, 10):
@@ -246,8 +253,7 @@ def admiral(field, ships): # адмирал, тепловая карта
                 for i in range(len(ships[ship_idx]) - 1):
                     ship = ships[ship_idx][i]
                     heat_map[ship[1]][ship[0]] = 0
-                if not clear_ship(field, ships, ship_idx): return False
-
+                clear_ship(field, ships, ship_idx)
             continue
         elif field[y][x] == 2:
             field[y][x] = 3
