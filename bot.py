@@ -33,7 +33,10 @@ def clear_ship(field, ships, ship_idx):
             if isinstance(part, list):
                 x, y, _ = part
                 field[y][x] = 5
-
+                for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)]:
+                    if 0 <= y + dy <= 9 and 0 <= x + dx <= 9:
+                        if field[y + dy][x + dx] == 2: 
+                            field[y + dy][x + dx] = 3
     else: return False
     return True
 
