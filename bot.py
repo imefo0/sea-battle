@@ -194,7 +194,7 @@ def harpooner(field, ships): # гаупунер, охотник
                 continue
     return True
 
-def navigator(field): # штурман, шахматный
+def navigator(field, ships): # штурман, шахматный
     pass
 
 def admiral(field, ships): # адмирал, тепловая карта
@@ -294,14 +294,14 @@ if __name__ == "__main__":
     num = 0
 
     while True:
-        status = admiral(main.field, ships)
+        status = navigator(main.field, ships)
         if status:
-            print(f"охотник делает ход {num}...")
+            print(f"навигатор делает ход {num}...")
             main.print_field(main.field)
-            # input()
+            input()
             # time.sleep(0.5)
-            # os.system("clear")
+            os.system("clear")
             num += 1
         else:
-            print("охотник победил!")
+            print("навигатор победил!")
             break
