@@ -54,6 +54,11 @@ def clear_ship(field, ships, ship_idx):
 
 def greenhorn(field, ships): # юнга, рандом
     while True:
+        res = True
+        for i in field:
+            if 0 in i: res = False
+        if res:
+            return False
         # пытаемся стрельнуть в рандомную координату
         x, y = [random.randint(0, 9), random.randint(0, 9)]
 
