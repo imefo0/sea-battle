@@ -188,23 +188,23 @@ def set_ship2(cell, dir, num, field, ships):
 # нормально сделать чтобы корды были везде через [x, y], 
 # а не как попало
 
-ships = []
-while True:
-    print_field(field)
+# ships = []
+# while True:
+#     print_field(field)
 
-    # raw_cell, dir, num = input().split(" ")
-    # cell = [int(i) for i in raw_cell.split(",")]
-    # print(set_ship2(cell, dir, int(num), field, ships))
-    # print(ships)
+#     # raw_cell, dir, num = input().split(" ")
+#     # cell = [int(i) for i in raw_cell.split(",")]
+#     # print(set_ship2(cell, dir, int(num), field, ships))
+#     # print(ships)
 
-    raw_cell1, raw_cell2 = input().split(" ")
-    cell1 = [int(i) for i in raw_cell1.split(",")]
-    cell2 = [int(i) for i in raw_cell2.split(",")]
-    print(set_ship1(cell1, cell2, field, ships))
-    print(ships)
+#     raw_cell1, raw_cell2 = input().split(" ")
+#     cell1 = [int(i) for i in raw_cell1.split(",")]
+#     cell2 = [int(i) for i in raw_cell2.split(",")]
+#     print(set_ship1(cell1, cell2, field, ships))
+#     print(ships)
 
-    time.sleep(5)
-    clear()
+#     time.sleep(5)
+#     clear()
 
 # убрать баг при размещении корабль на корабль 
 # и столконовение кораблей
