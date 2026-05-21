@@ -283,13 +283,12 @@ if __name__ == "__main__":
     num = 0
 
     while True:
-        status = list(harpooner(main.field, ships))
-        if status[0]:
+        status = admiral(main.field, ships)
+        if status:
             print(f"охотник делает ход {num}...")
             main.print_field(main.field)
-            print(f"{status[1]}")
             # input()
-            # time.sleep(2)
+            # time.sleep(0.5)
             # os.system("clear")
             num += 1
         else:
