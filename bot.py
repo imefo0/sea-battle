@@ -194,6 +194,11 @@ def navigator(field): # штурман, шахматный
 
 def admiral(field, ships): # адмирал, тепловая карта
     while True:
+        res = True
+        for i in field:
+            if 0 in i: res = False
+        if res:
+            return False
         heat_map = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -248,8 +253,7 @@ def admiral(field, ships): # адмирал, тепловая карта
                 for i in range(len(ships[ship_idx]) - 1):
                     ship = ships[ship_idx][i]
                     heat_map[ship[1]][ship[0]] = 0
-                if not clear_ship(field, ships, ship_idx): return False
-
+                clear_ship(field, ships, ship_idx)
             continue
         elif field[y][x] == 2:
             field[y][x] = 3
