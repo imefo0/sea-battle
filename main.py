@@ -182,12 +182,12 @@ def set_ship2(cell, dir, num, field, ships):
 
     # предпологаем в каких координатах 
     # будет конец корабля
-    final_x = x + dx * num
+    final_x = x + dx * num 
     final_y = y + dy * num
 
     # если корабль выходит за пределы карты
-    if any([final_x < 0, final_y < 0,
-            final_x > 9, final_y > 9]):
+    if any([final_x < -1, final_y < -1,
+            final_x > 10, final_y > 10]):
         return False
 
     list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
