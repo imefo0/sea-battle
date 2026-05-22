@@ -115,24 +115,44 @@ def fire(cell):
     return True
 
 def set_ship1(cell1, cell2, field, ships):
-    dx = abs(cell1[0] - cell2[0])
-    dy = abs(cell1[1] - cell2[1])
+    # находим offset
+    # (1, 0), (-1, 0), (0, 1), (0, -1)
+    
+    # находим начальные координаты и 
+    # изменение для следующей палубы
+    dx = (cell2[0] > cell1[0]) - (cell2[0] < cell1[0])
+    dy = (cell2[1] > cell1[1]) - (cell2[1] < cell1[1])
+    num = max(abs(cell2[0] - cell1[0]), abs(cell2[1] - cell1[1]))
+    x, y = list(cell1)
 
-    if dx != 0 and dy != 0: return False
+    # предпологаем в каких координатах 
+    # будет конец корабля
 
-    axis = 1 if dx == 0 else 0
-    steps = dy if dx == 0 else dx
+    # если корабль выходит за пределы карты
+    if any([cell2[0] < 0, cell2[1] < 0,
+            cell2[0] > 9, cell2[1] > 9]):
+        return False
 
-    cell = list(cell1 if cell1[axis] < cell2[axis] else cell2)
+    list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
+                  (0, 1), (0, -1), (1, 0), (-1, 0),
+                  (0, 0)]
+    for i in range(num + 1):
+        for j in list_for_test:
+            if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
+                field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
+                return False
 
-    # создаем корабль
+    # создаем новый корабль
     ships.append([0])
 
-    for _ in range(steps + 1):
-        change_cell(cell, 0, field)
-        add_part_of_ship(ships, -1, [*cell, True])
-        cell[axis] += 1
-    
+    # заменяем каждую клетку которую надо
+    # на корабль
+    for _ in range(num + 1):
+        change_cell([x, y], 0, field)
+        add_part_of_ship(ships, -1, [x, y, True])
+        x += dx
+        y += dy
+
     return True
 
 # на входе получаем координату только носа корабля,
@@ -166,9 +186,18 @@ def set_ship2(cell, dir, num, field, ships):
     final_y = y + dy * num
 
     # если корабль выходит за пределы карты
-    if any([final_x < -1, final_y < -1,
-            final_x > 10, final_y > 10]):
+    if any([final_x < 0, final_y < 0,
+            final_x > 9, final_y > 9]):
         return False
+
+    list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
+                  (0, 1), (0, -1), (1, 0), (-1, 0),
+                  (0, 0)]
+    for i in range(num):
+        for j in list_for_test:
+            if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
+                field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
+                return False
 
     # создаем новый корабль
     ships.append([0])
@@ -210,4 +239,13 @@ def set_ship2(cell, dir, num, field, ships):
 # и столконовение кораблей
 
 if __name__ == "__main__":
-    pass
+    ships = []
+    while True:
+        print_field(field)
+
+        raw_cell, dir, num = input().split(" ")
+        cell = [int(i) for i in raw_cell.split(",")]
+        print(set_ship2(cell, dir, int(num), field, ships))
+
+        time.sleep(0.5)
+        clear()
