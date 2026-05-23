@@ -24,11 +24,28 @@ heat_map = [
 # searching - поиск через рандом
 # attack - атака
 harpooner_mode = "searching"
+navigator_mode = ["searching", 4]
+
+navigator_map = []
+
 cells = []
 directions = [
     (1, 0), (-1, 0),
     (0, 1), (0, -1)
 ]
+for a in [
+    [(0, 1), (0, 5), (0, 9), (4, 9), (8, 9)],
+    [(0, 3), (0, 7), (2, 9), (6, 9)]
+]:
+    navigator_map.append([])
+    for i in a:
+        x0, y0 = i
+        x, y = x0, y0
+        while (x, y) != (y0, x0):
+            navigator_map[-1].append((x, y))
+            x += 1
+            y -= 1
+
 
 def find_ship_by_cell(ships, cell):
     x, y = list(cell)
@@ -195,7 +212,60 @@ def harpooner(field, ships): # гаупунер, охотник
     return True
 
 def navigator(field, ships): # штурман, шахматный
-    pass
+    # import pdb; pdb.set_trace()
+    # part 1: до мержа с att_mode, режим searching
+    global navigator_mode, navigator_map, directions
+
+    while True:
+        if navigator_mode[0] == "searching":
+            if len(navigator_map) != 0:
+                if navigator_map[0] == []:
+                    del navigator[0]
+                    x, y = random.choice(navigator_map[0])
+                    navigator_map[0].remove((x, y))
+                else:
+                    x, y = random.choice(navigator_map[0])
+                    navigator_map[0].remove((x, y))
+
+            else:
+                x, y = random.randint(0, 9), random.randing(0, 9)
+
+            if field[y][x] == 0:
+                field[y][x] = 4
+
+                # измененить список кораблей
+                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+                ships[ship_idx][part_idx][2] = False
+                ships[ship_idx][-1] -= 1
+                
+                # если убили
+                if ships[ship_idx][-1] == 0:
+                    clear_ship(field, ships, ship_idx)
+                    directions = [
+                        (1, 0), (-1, 0), (0, 1), (0, -1)
+                    ]
+                    cells.clear()
+                    navigator_mode[0] = "searching"
+                    x, y = None, None
+
+                    continue
+
+                cells.append([x, y])
+                navigator_mode[0] = "attack"
+
+                continue
+            
+            elif field[y][x] == 2:
+                field[y][x] = 3
+                directions = [
+                (0, 1), (1, 0), (0, -1), (-1, 0)
+                ]
+                break
+
+        # part 2: полсе мержа с att_mode, режим attack
+        elif navigator_mode[0] == "attack":
+            return False
+    return True
 
 def admiral(field, ships): # адмирал, тепловая карта
     while True:
