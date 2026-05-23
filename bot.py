@@ -24,7 +24,7 @@ heat_map = [
 # searching - поиск через рандом
 # attack - атака
 harpooner_mode = "searching"
-navigator_mode = ["searching", 4]
+navigator_mode = "searching"
 
 navigator_map = []
 
@@ -217,7 +217,7 @@ def navigator(field, ships): # штурман, шахматный
     global navigator_mode, navigator_map, directions
 
     while True:
-        if navigator_mode[0] == "searching":
+        if navigator_mode == "searching":
             if len(navigator_map) != 0:
                 if navigator_map[0] == []:
                     del navigator[0]
@@ -245,13 +245,13 @@ def navigator(field, ships): # штурман, шахматный
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
                     cells.clear()
-                    navigator_mode[0] = "searching"
+                    navigator_mode = "searching"
                     x, y = None, None
 
                     continue
 
                 cells.append([x, y])
-                navigator_mode[0] = "attack"
+                navigator_mode = "attack"
 
                 continue
             
@@ -263,7 +263,7 @@ def navigator(field, ships): # штурман, шахматный
                 break
 
         # part 2: полсе мержа с att_mode, режим attack
-        elif navigator_mode[0] == "attack":
+        elif navigator_mode == "attack":
             return False
     return True
 
