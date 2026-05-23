@@ -52,8 +52,8 @@ def clear_ship(field, ships, ship_idx):
     else: return False
     return True
 
-def attack_mode(field, ships): # для harpooner, navigator
-    global directions, harpooner_mode, x, y
+def attack_mode(field, ships, bot): # для harpooner, navigator
+    global directions, harpooner_mode, navigator_mode, x, y
     # import pdb; pdb.set_trace()
     if x - 1 < 0: directions.remove((-1, 0))
     if x + 1 > 9: directions.remove((1, 0))
@@ -93,7 +93,10 @@ def attack_mode(field, ships): # для harpooner, navigator
                 (1, 0), (-1, 0), (0, 1), (0, -1)
             ]
             cells.clear()
-            harpooner_mode = "searching"
+            if bot == "harpooner":
+                harpooner_mode = "searching"
+            elif bot == "navigator":
+                navigator_mode = "searching"
             x, y = None, None
             return ["continue", True]
 
@@ -113,7 +116,8 @@ def attack_mode(field, ships): # для harpooner, navigator
         x, y = x + dx, y + dy
         return ["continue", True]
 
-    elif field[y + dy][x + dx] in [1, 3, 5] and harpooner_mode == "attack":
+    elif field[y + dy][x + dx] in [1, 3, 5] and \
+        (harpooner_mode == "attack" or navigator_mode == "attack"):
         directions.remove((dx, dy))
         return ["continue", True]
 
