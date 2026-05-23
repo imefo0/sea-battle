@@ -282,7 +282,7 @@ def harpooner(field, ships): # гаупунер, охотник
                 continue"""
         
         elif harpooner_mode == "attack":
-            result = attack_mode(field, ships)
+            result = attack_mode(field, ships, "harpooner")
             if result[1]:
                 if result[0] == "continue":
                     continue
