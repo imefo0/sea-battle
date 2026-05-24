@@ -5,6 +5,10 @@ import random
 
 # ВЕЗДЕ [x, y], НИКАКОГО xy И ДРУГОЙ ЧУШИ!!!!!!!
 
+turn = "player"
+set_ship = "1"
+bot = "harpooner"
+
 # поле для игрока
 player_field = []
 player_ships = []
@@ -67,22 +71,25 @@ def add_part_of_ship(ships: list, ship_idx: int, part: list):
     return True
 
 # печатаем поле
-def print_field(field):
+def print_field(field1, field2):
     words = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]
 
     # пишем все вертикали в виде букв
     print(end="   ")
-    for i in words:
-        print(i, end="  ")
+    for n in range(2):
+        for i in words:
+            print(i, end="  ")
     print()
 
     # перебор в списке поля
-    for i in range(len(field)):
+    for i in range(len(field1)):
         # пишем пробел, горизонталь, если это i=9 то
         # не пишем перед ним пробел
         print(f" {i+1}" if i != 9 else f"{i+1}", end=" ")
         # пишем каждую клетку
-        for j in field[i]:
+        for j in field1[i]:
+            print(translate_to_emoji(j), end=" ")
+        for j in field2[i]:
             print(translate_to_emoji(j), end=" ")
         print()
 
@@ -114,7 +121,7 @@ def fire(cell):
     
     return True
 
-def set_ship1(cell1, cell2, field, ships):
+def set_ship1(cell1, cell2, field, ships, num):
     # находим offset
     # (1, 0), (-1, 0), (0, 1), (0, -1)
     
@@ -122,7 +129,7 @@ def set_ship1(cell1, cell2, field, ships):
     # изменение для следующей палубы
     dx = (cell2[0] > cell1[0]) - (cell2[0] < cell1[0])
     dy = (cell2[1] > cell1[1]) - (cell2[1] < cell1[1])
-    num = max(abs(cell2[0] - cell1[0]), abs(cell2[1] - cell1[1]))
+    steps = max(abs(cell2[0] - cell1[0]), abs(cell2[1] - cell1[1]))
     x, y = list(cell1)
 
     # предпологаем в каких координатах 
@@ -136,7 +143,7 @@ def set_ship1(cell1, cell2, field, ships):
     list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
                   (0, 1), (0, -1), (1, 0), (-1, 0),
                   (0, 0)]
-    for i in range(num + 1):
+    for i in range(steps + 1):
         for j in list_for_test:
             if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
                 field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
@@ -147,8 +154,8 @@ def set_ship1(cell1, cell2, field, ships):
 
     # заменяем каждую клетку которую надо
     # на корабль
-    for _ in range(num + 1):
-        change_cell([x, y], 0, field)
+    for _ in range(steps + 1):
+        change_cell([x, y], num, field)
         add_part_of_ship(ships, -1, [x, y, True])
         x += dx
         y += dy
@@ -160,7 +167,7 @@ def set_ship1(cell1, cell2, field, ships):
 # куда будем его пихать
 # coordinate -> cell
 # direction -> dir
-def set_ship2(cell, dir, num, field, ships):    
+def set_ship2(cell, dir, steps, field, ships, num):
     # dir принимает udlr и ^v<>
     # для определения смещения dir
     delta = {
@@ -182,8 +189,8 @@ def set_ship2(cell, dir, num, field, ships):
 
     # предпологаем в каких координатах 
     # будет конец корабля
-    final_x = x + dx * num 
-    final_y = y + dy * num
+    final_x = x + dx * steps
+    final_y = y + dy * steps
 
     # если корабль выходит за пределы карты
     if any([final_x < -1, final_y < -1,
@@ -193,7 +200,7 @@ def set_ship2(cell, dir, num, field, ships):
     list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
                   (0, 1), (0, -1), (1, 0), (-1, 0),
                   (0, 0)]
-    for i in range(num):
+    for i in range(steps):
         for j in list_for_test:
             if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
                 field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
@@ -204,8 +211,8 @@ def set_ship2(cell, dir, num, field, ships):
 
     # заменяем каждую клетку которую надо
     # на корабль
-    for _ in range(num):
-        change_cell([x, y], 0, field)
+    for _ in range(steps):
+        change_cell([x, y], num, field)
         add_part_of_ship(ships, -1, [x, y, True])
         x += dx
         y += dy
@@ -213,6 +220,46 @@ def set_ship2(cell, dir, num, field, ships):
     return True
     # добавить механику добавления корабля в список 
     # ships_player/bot_has
+
+def start():
+    global turn, set_ship, bot
+    turn = input("select 1st turn (default player): ")
+    set_ship = input("select set_ship (default 1): ")
+    bot = input("select bot (harpooner): ")
+    who_win = "nobody"
+
+    while who_win == "nobody":
+        if turn == "player":
+            if set_ship == "1":
+                pass
+
+            elif set_ship == "2":
+                pass
+
+            else:
+                print("incorrect set_ship")
+                break
+            
+            turn = "bot"
+
+        elif turn == "bot":
+            
+            
+            turn = "player"
+        
+        else:
+            print("incorrect turn")
+            break
+    
+    if who_win == "nobody":
+        print("error")
+        return False
+
+    elif who_win == "bot":
+        print("bot won!")
+    elif who_win == "player":
+        print("player won!")
+    return True
 
 # нормально сделать чтобы корды были везде через [x, y], 
 # а не как попало
@@ -223,13 +270,13 @@ def set_ship2(cell, dir, num, field, ships):
 
 #     # raw_cell, dir, num = input().split(" ")
 #     # cell = [int(i) for i in raw_cell.split(",")]
-#     # print(set_ship2(cell, dir, int(num), field, ships))
+#     # print(set_ship2(cell, dir, int(num), field, ships, 0))
 #     # print(ships)
 
 #     raw_cell1, raw_cell2 = input().split(" ")
 #     cell1 = [int(i) for i in raw_cell1.split(",")]
 #     cell2 = [int(i) for i in raw_cell2.split(",")]
-#     print(set_ship1(cell1, cell2, field, ships))
+#     print(set_ship1(cell1, cell2, field, ships, 0))
 #     print(ships)
 
 #     time.sleep(5)
@@ -245,7 +292,7 @@ if __name__ == "__main__":
 
         raw_cell, dir, num = input().split(" ")
         cell = [int(i) for i in raw_cell.split(",")]
-        print(set_ship2(cell, dir, int(num), field, ships))
+        print(set_ship2(cell, dir, int(num), field, ships, 0))
 
         time.sleep(0.5)
         clear()
