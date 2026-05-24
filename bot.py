@@ -28,7 +28,7 @@ navigator_mode = "searching"
 
 navigator_map = []
 
-cells = []
+
 directions = [
     (1, 0), (-1, 0),
     (0, 1), (0, -1)
@@ -84,7 +84,6 @@ def attack_mode(field, ships, bot): # для harpooner, navigator
     if field[y + dy][x + dx] == 0:
         field[y + dy][x + dx] = 4
         x, y = x + dx, y + dy
-        cells.append([x, y])
 
         # изменение в списке кораблей
         ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
@@ -103,18 +102,16 @@ def attack_mode(field, ships, bot): # для harpooner, navigator
             if (-1, 0) in directions: 
                    directions.remove((-1, 0))
 
-                # если убит
+        # если убит
         if ships[ship_idx][-1] == 0:
             clear_ship(field, ships, ship_idx)
             directions = [
                 (1, 0), (-1, 0), (0, 1), (0, -1)
             ]
-            cells.clear()
             if bot == "harpooner":
                 harpooner_mode = "searching"
             elif bot == "navigator":
                 navigator_mode = "searching"
-            x, y = None, None
             return ["continue", True]
 
     # если мимо
@@ -171,7 +168,7 @@ def greenhorn(field, ships): # юнга, рандом
     return True
 
 def harpooner(field, ships): # гаупунер, охотник
-    global directions, harpooner_mode, cells, x, y
+    global directions, harpooner_mode, x, y
 
     while True:
         #import pdb; pdb.set_trace()
@@ -201,13 +198,11 @@ def harpooner(field, ships): # гаупунер, охотник
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
-                    cells.clear()
                     harpooner_mode = "searching"
                     x, y = None, None
 
                     continue
 
-                cells.append([x, y])
                 harpooner_mode = "attack"
 
                 continue
@@ -235,7 +230,6 @@ def harpooner(field, ships): # гаупунер, охотник
             if field[y + dy][x + dx] == 0:
                 field[y + dy][x + dx] = 4
                 x, y = x + dx, y + dy
-                cells.append([x, y])
 
                 # изменение в списке кораблей
                 ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
@@ -260,7 +254,6 @@ def harpooner(field, ships): # гаупунер, охотник
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
-                    cells.clear()
                     harpooner_mode = "searching"
                     x, y = None, None
                     continue
@@ -291,24 +284,27 @@ def harpooner(field, ships): # гаупунер, охотник
     return True
 
 def navigator(field, ships): # штурман, шахматный
-    # import pdb; pdb.set_trace()
-    # part 1: до мержа с att_mode, режим searching
-    global navigator_mode, navigator_map, directions
+    global directions, navigator_mode, x, y
 
     while True:
+        #import pdb; pdb.set_trace()
+        status = True
+        for i in field:
+            if 0 in i: status = False
+        if status:
+            return False
+
+        # режим поиска
         if navigator_mode == "searching":
-            if len(navigator_map) != 0:
-                if navigator_map[0] == []:
-                    del navigator[0]
-                    x, y = random.choice(navigator_map[0])
-                    navigator_map[0].remove((x, y))
-                else:
-                    x, y = random.choice(navigator_map[0])
-                    navigator_map[0].remove((x, y))
-
-            else:
-                x, y = random.randint(0, 9), random.randing(0, 9)
-
+            if [] in navigator_map:
+                navigator_map.remove([])
+            if navigator_map == []:
+                x, y = random.randint(0, 9), random.randint(0, 9)
+            if navigator_map != [] and [] not in navigator_map:
+                x, y = random.choice(navigator_map[0])
+                navigator_map[0].remove((x, y))
+            
+            # если попали
             if field[y][x] == 0:
                 field[y][x] = 4
 
@@ -323,27 +319,30 @@ def navigator(field, ships): # штурман, шахматный
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
-                    cells.clear()
                     navigator_mode = "searching"
                     x, y = None, None
 
                     continue
 
-                cells.append([x, y])
                 navigator_mode = "attack"
 
                 continue
-            
+
+            # если мимо
             elif field[y][x] == 2:
                 field[y][x] = 3
                 directions = [
                 (0, 1), (1, 0), (0, -1), (-1, 0)
                 ]
                 break
-
-        # part 2: полсе мержа с att_mode, режим attack
+        
         elif navigator_mode == "attack":
-            return False
+            result = attack_mode(field, ships, "navigator")
+            if result[1]:
+                if result[0] == "continue":
+                    continue
+                elif result[0] == "break":
+                    break
     return True
 
 def admiral(field, ships): # адмирал, тепловая карта
@@ -440,17 +439,19 @@ if __name__ == "__main__":
     main.set_ship1([4,8], [4,8], main.field, ships)
 
     os.system("clear")
-    num = 0
+    num = 1
 
     while True:
-        status = harpooner(main.field, ships)
+        status = navigator(main.field, ships)
         if status:
             print(f"навигатор делает ход {num}...")
             main.print_field(main.field)
             # input()
-            # time.sleep(0.5)
+            time.sleep(0.1)
             os.system("clear")
             num += 1
         else:
-            print("навигатор победил!")
+
+            print(f"навигатор победил за ходов: {num}!")
+            main.print_field(main.field)
             break
