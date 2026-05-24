@@ -24,11 +24,28 @@ heat_map = [
 # searching - поиск через рандом
 # attack - атака
 harpooner_mode = "searching"
-cells = []
+navigator_mode = "searching"
+
+navigator_map = []
+
+
 directions = [
     (1, 0), (-1, 0),
     (0, 1), (0, -1)
 ]
+for a in [
+    [(0, 1), (0, 5), (0, 9), (4, 9), (8, 9)],
+    [(0, 3), (0, 7), (2, 9), (6, 9)]
+]:
+    navigator_map.append([])
+    for i in a:
+        x0, y0 = i
+        x, y = x0, y0
+        while (x, y) != (y0, x0):
+            navigator_map[-1].append((x, y))
+            x += 1
+            y -= 1
+
 
 def find_ship_by_cell(ships, cell):
     x, y = list(cell)
@@ -51,6 +68,74 @@ def clear_ship(field, ships, ship_idx):
                             field[y + dy][x + dx] = 3
     else: return False
     return True
+
+def attack_mode(field, ships, bot): # для harpooner, navigator
+    global directions, harpooner_mode, navigator_mode, x, y
+    # import pdb; pdb.set_trace()
+    if x - 1 < 0: directions.remove((-1, 0))
+    if x + 1 > 9: directions.remove((1, 0))
+    if y - 1 < 0: directions.remove((0, -1))
+    if y + 1 > 9: directions.remove((0, 1))
+
+    # выборка направления
+    dx, dy = random.choice(directions) 
+
+    # если попал
+    if field[y + dy][x + dx] == 0:
+        field[y + dy][x + dx] = 4
+        x, y = x + dx, y + dy
+
+        # изменение в списке кораблей
+        ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+        ships[ship_idx][part_idx][2] = False
+        ships[ship_idx][-1] -= 1
+
+        # удаляем перпендикулярные направления
+        if dx != 0:
+            if (0, 1) in directions:
+                directions.remove((0, 1))
+            if (0, -1) in directions: 
+                directions.remove((0, -1))
+        if dy != 0:
+            if (1, 0) in directions:
+                directions.remove((1, 0))
+            if (-1, 0) in directions: 
+                   directions.remove((-1, 0))
+
+        # если убит
+        if ships[ship_idx][-1] == 0:
+            clear_ship(field, ships, ship_idx)
+            directions = [
+                (1, 0), (-1, 0), (0, 1), (0, -1)
+            ]
+            if bot == "harpooner":
+                harpooner_mode = "searching"
+            elif bot == "navigator":
+                navigator_mode = "searching"
+            return ["continue", True]
+
+    # если мимо
+    elif field[y + dy][x + dx] == 2:
+        field[y + dy][x + dx] = 3
+        # если дошли до края корабля но не убили его
+        if len(directions) == 1:
+            directions.append( (-directions[0][0], -directions[0][1]) )
+            del directions[0] 
+            return ["break", True]
+        directions.remove((dx, dy))
+        return ["break", True]
+
+    # если уже стреляли по кораблю (то "ходим" по нему)
+    elif field[y + dy][x + dx] == 4:
+        x, y = x + dx, y + dy
+        return ["continue", True]
+
+    elif field[y + dy][x + dx] in [1, 3, 5] and \
+        (harpooner_mode == "attack" or navigator_mode == "attack"):
+        directions.remove((dx, dy))
+        return ["continue", True]
+
+    return ["break", True]
 
 def greenhorn(field, ships): # юнга, рандом
     while True:
@@ -83,7 +168,7 @@ def greenhorn(field, ships): # юнга, рандом
     return True
 
 def harpooner(field, ships): # гаупунер, охотник
-    global directions, harpooner_mode, cells, x, y
+    global directions, harpooner_mode, x, y
 
     while True:
         #import pdb; pdb.set_trace()
@@ -113,13 +198,11 @@ def harpooner(field, ships): # гаупунер, охотник
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
-                    cells.clear()
                     harpooner_mode = "searching"
                     x, y = None, None
 
                     continue
 
-                cells.append([x, y])
                 harpooner_mode = "attack"
 
                 continue
@@ -132,7 +215,7 @@ def harpooner(field, ships): # гаупунер, охотник
                 ]
                 break
     
-        # режим атаки
+            """# режим атаки
         elif harpooner_mode == "attack":
 
             if x - 1 < 0: directions.remove((-1, 0))
@@ -147,7 +230,6 @@ def harpooner(field, ships): # гаупунер, охотник
             if field[y + dy][x + dx] == 0:
                 field[y + dy][x + dx] = 4
                 x, y = x + dx, y + dy
-                cells.append([x, y])
 
                 # изменение в списке кораблей
                 ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
@@ -172,7 +254,6 @@ def harpooner(field, ships): # гаупунер, охотник
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
                     ]
-                    cells.clear()
                     harpooner_mode = "searching"
                     x, y = None, None
                     continue
@@ -182,7 +263,7 @@ def harpooner(field, ships): # гаупунер, охотник
                 field[y + dy][x + dx] = 3
                 # если дошли до края корабля но не убили его
                 if len(directions) == 1:
-                    directions.append( (-directions[0][0], (-directions[0][1])) )
+                    directions.append( (-directions[0][0], -directions[0][1]) )
                     del directions[0] 
                     break
                 directions.remove((dx, dy))
@@ -191,11 +272,78 @@ def harpooner(field, ships): # гаупунер, охотник
             # если уже стреляли по кораблю (то "ходим" по нему)
             elif field[y + dy][x + dx] == 4:
                 x, y = x + dx, y + dy
-                continue
+                continue"""
+        
+        elif harpooner_mode == "attack":
+            result = attack_mode(field, ships, "harpooner")
+            if result[1]:
+                if result[0] == "continue":
+                    continue
+                elif result[0] == "break":
+                    break
     return True
 
-def navigator(field): # штурман, шахматный
-    pass
+def navigator(field, ships): # штурман, шахматный
+    global directions, navigator_mode, x, y
+
+    while True:
+        #import pdb; pdb.set_trace()
+        status = True
+        for i in field:
+            if 0 in i: status = False
+        if status:
+            return False
+
+        # режим поиска
+        if navigator_mode == "searching":
+            if [] in navigator_map:
+                navigator_map.remove([])
+            if navigator_map == []:
+                x, y = random.randint(0, 9), random.randint(0, 9)
+            if navigator_map != [] and [] not in navigator_map:
+                x, y = random.choice(navigator_map[0])
+                navigator_map[0].remove((x, y))
+            
+            # если попали
+            if field[y][x] == 0:
+                field[y][x] = 4
+
+                # измененить список кораблей
+                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+                ships[ship_idx][part_idx][2] = False
+                ships[ship_idx][-1] -= 1
+                
+                # если убили
+                if ships[ship_idx][-1] == 0:
+                    clear_ship(field, ships, ship_idx)
+                    directions = [
+                        (1, 0), (-1, 0), (0, 1), (0, -1)
+                    ]
+                    navigator_mode = "searching"
+                    x, y = None, None
+
+                    continue
+
+                navigator_mode = "attack"
+
+                continue
+
+            # если мимо
+            elif field[y][x] == 2:
+                field[y][x] = 3
+                directions = [
+                (0, 1), (1, 0), (0, -1), (-1, 0)
+                ]
+                break
+        
+        elif navigator_mode == "attack":
+            result = attack_mode(field, ships, "navigator")
+            if result[1]:
+                if result[0] == "continue":
+                    continue
+                elif result[0] == "break":
+                    break
+    return True
 
 def admiral(field, ships): # адмирал, тепловая карта
     while True:
@@ -291,17 +439,19 @@ if __name__ == "__main__":
     main.set_ship1([4,8], [4,8], main.field, ships)
 
     os.system("clear")
-    num = 0
+    num = 1
 
     while True:
-        status = admiral(main.field, ships)
+        status = navigator(main.field, ships)
         if status:
-            print(f"охотник делает ход {num}...")
+            print(f"навигатор делает ход {num}...")
             main.print_field(main.field)
             # input()
-            # time.sleep(0.5)
-            # os.system("clear")
+            time.sleep(0.1)
+            os.system("clear")
             num += 1
         else:
-            print("охотник победил!")
+
+            print(f"навигатор победил за ходов: {num}!")
+            main.print_field(main.field)
             break
