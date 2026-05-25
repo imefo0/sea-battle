@@ -130,10 +130,10 @@ def set_ships(field: list[list[int]], ships, placement_method: list[str]) -> boo
 def attack_mode(field, ships, bot): # для harpooner, navigator
     global directions, harpooner_mode, navigator_mode, x, y
     # import pdb; pdb.set_trace()
-    if x - 1 < 0: directions.remove((-1, 0))
-    if x + 1 > 9: directions.remove((1, 0))
-    if y - 1 < 0: directions.remove((0, -1))
-    if y + 1 > 9: directions.remove((0, 1))
+    if x - 1 < 0 and (-1, 0) in directions: directions.remove((-1, 0))
+    if x + 1 > 9 and (1, 0) in directions: directions.remove((1, 0))
+    if y - 1 < 0 and (0, -1) in directions: directions.remove((0, -1))
+    if y + 1 > 9 and (0, 1) in directions: directions.remove((0, 1))
 
     # выборка направления
     dx, dy = random.choice(directions) 

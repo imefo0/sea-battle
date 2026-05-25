@@ -282,7 +282,8 @@ def start():
                     break
                 os.system("clear")
 
-            print("bot's turn")
+            print("bot's turn to place ships")
+            time.sleep(0.7)
 
             bot.set_ships(bot_field, bot_ships, placement_method)
 
