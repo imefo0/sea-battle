@@ -132,7 +132,7 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
     steps = max(abs(cell2[0] - cell1[0]), abs(cell2[1] - cell1[1]))
     x, y = list(cell1)
 
-    if placement_method != steps:
+    if placement_method != steps + 1:
         return False
 
     # предпологаем в каких координатах 
@@ -266,7 +266,7 @@ def start():
                         cell1 = [int(i) for i in raw_cell1.split(",")]
                         cell2 = [int(i) for i in raw_cell2.split(",")]
 
-                        if set_ship1(cell1, cell2, player_field, player_ships, 1): break
+                        if set_ship1(cell1, cell2, player_field, player_ships, 1, int(i)): break
                         else: print("incorrect input")
 
                 elif set_ship == "2":
@@ -274,7 +274,7 @@ def start():
                         raw_cell, dir, num = input().split(" ")
                         cell = [int(i) for i in raw_cell.split(",")]
 
-                        if set_ship2(cell, dir, int(num), player_field, player_ships, 0): break
+                        if set_ship2(cell, dir, int(num), player_field, player_ships, 1, int(i)): break
                         else: print("iccorect input")
 
                 else:
