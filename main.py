@@ -267,6 +267,23 @@ def start():
             print("bot cannot to place ships now") # временно
 
             game_mode = "attacking"
+
+        # добавление bot_field в player_radar
+        for i in range(len(bot_field)):
+            for j in range(len(bot_field[i])):
+                if bot_field[i][j] == 1:
+                    player_radar[i][j] = 0
+                elif bot_field[i][j] == 2:
+                    player_radar[i][j] = 2
+
+        # добавление player_field в bot_radar
+        for i in range(len(player_field)):
+            for j in range(len(player_field[i])):
+                if player_field[i][j] == 1:
+                    bot_radar[i][j] = 0
+                elif player_field[i][j] == 2:
+                    bot_radar[i][j] = 2
+        
         # elif game_mode == "attacking":
         #     if turn == "player":
         #         print("player's turn")
@@ -286,6 +303,16 @@ def start():
 
         #         if bot_name == "greenhorn":
         #             bot.greenhorn(bot_radar, bot_ships)
+        #         elif bot_name == "harpooner":
+        #             bot.harpooner(bot_radar, bot_ships)
+        #         elif bot_name == "navigator":
+        #             bot.navigator(bot_radar, bot_ships)
+        #         elif bot_name == "admiral":
+        #             bot.admiral(bot_radar, bot_ships)
+        #         elif bot_name == "master_seawolf":
+        #             print("master_seawolf doesn't work now")
+        #         else:
+        #             print("incorrect bot name")
                 
         #         turn = "player"
             
