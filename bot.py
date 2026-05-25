@@ -69,8 +69,9 @@ def clear_ship(field, ships, ship_idx):
     else: return False
     return True
 
-def set_ships(field: list[list[int]], ships, placement_method: list) -> bool:
-    for num in placement_method:
+def set_ships(field: list[list[int]], ships, placement_method: list[str]) -> bool:
+    list_of_methods = list(map(int, placement_method))
+    for num in list_of_methods:
         while True:
             cell = [random.randint(0, 9), random.randint(0, 9)]
             # узнаем смещение
