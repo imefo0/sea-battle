@@ -69,6 +69,63 @@ def clear_ship(field, ships, ship_idx):
     else: return False
     return True
 
+def set_ships(field: list[list[int]], ships, placement_method: list) -> bool:
+    for num in placement_method:
+        while True:
+            cell = [random.randint(0, 9), random.randint(0, 9)]
+            # узнаем смещение
+            offset = random.choice([(0, 1), (0, -1), (-1, 0), (1, 0)])
+
+            # если неверный ввод
+            if offset == None: return False
+
+            # находим начальные координаты и 
+            # изменение для следующей палубы
+            dx, dy = offset
+            x, y = list(cell)
+
+            # предпологаем в каких координатах 
+            # будет конец корабля
+            final_x = x + dx * num 
+            final_y = y + dy * num
+
+            ok = "ok"
+
+            # если корабль выходит за пределы карты
+            if any([final_x < -1, final_y < -1,
+                    final_x > 10, final_y > 10]):
+                ok = "continue"
+
+            list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
+                        (0, 1), (0, -1), (1, 0), (-1, 0),
+                        (0, 0)]
+            
+            for i in range(num):
+                for j in list_for_test:
+                    if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
+                        field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
+                        ok = "continue"
+            
+            if ok == "continue":
+                ok = "ok"
+                continue
+
+            # создаем новый корабль
+            ships.append([0])
+
+            # заменяем каждую клетку которую надо
+            # на корабль
+            for _ in range(num):
+                field[y][x] = 0
+                
+                ships[-1].insert(-1, [x, y, True])
+                ships[-1][-1] += 1
+                x += dx
+                y += dy
+            
+            break
+    return True
+
 def attack_mode(field, ships, bot): # для harpooner, navigator
     global directions, harpooner_mode, navigator_mode, x, y
     # import pdb; pdb.set_trace()
@@ -423,35 +480,41 @@ def master_seawolf(field): # мастер Морской волк, карта + 
 # В играх сложность ботов обычно строится как «слоеный пирог»:
 # каждый следующий уровень включает в себя фишки предыдущего.
 
+# if __name__ == "__main__":
+#     ships = []
+
+#     main.set_ship1([1,1], [1,1], main.field, ships)
+#     main.set_ship1([3,2], [5,2], main.field, ships)
+#     main.set_ship1([7,2], [8,2], main.field, ships)
+#     main.set_ship1([1,3], [1,4], main.field, ships)
+#     main.set_ship1([3,4], [6,4], main.field, ships)
+
+#     main.set_ship1([8,4], [8,5], main.field, ships)
+#     main.set_ship1([1,6], [3,6], main.field, ships)
+#     main.set_ship1([5,6], [5,6], main.field, ships)
+#     main.set_ship1([7,7], [7,7], main.field, ships)
+#     main.set_ship1([4,8], [4,8], main.field, ships)
+
+#     os.system("clear")
+#     num = 1
+
+#     while True:
+#         status = navigator(main.field, ships)
+#         if status:
+#             print(f"навигатор делает ход {num}...")
+#             main.print_field(main.field)
+#             # input()
+#             time.sleep(0.1)
+#             os.system("clear")
+#             num += 1
+#         else:
+
+#             print(f"навигатор победил за ходов: {num}!")
+#             main.print_field(main.field)
+#             break
+
 if __name__ == "__main__":
+    import main
     ships = []
-
-    main.set_ship1([1,1], [1,1], main.field, ships)
-    main.set_ship1([3,2], [5,2], main.field, ships)
-    main.set_ship1([7,2], [8,2], main.field, ships)
-    main.set_ship1([1,3], [1,4], main.field, ships)
-    main.set_ship1([3,4], [6,4], main.field, ships)
-
-    main.set_ship1([8,4], [8,5], main.field, ships)
-    main.set_ship1([1,6], [3,6], main.field, ships)
-    main.set_ship1([5,6], [5,6], main.field, ships)
-    main.set_ship1([7,7], [7,7], main.field, ships)
-    main.set_ship1([4,8], [4,8], main.field, ships)
-
-    os.system("clear")
-    num = 1
-
-    while True:
-        status = navigator(main.field, ships)
-        if status:
-            print(f"навигатор делает ход {num}...")
-            main.print_field(main.field)
-            # input()
-            time.sleep(0.1)
-            os.system("clear")
-            num += 1
-        else:
-
-            print(f"навигатор победил за ходов: {num}!")
-            main.print_field(main.field)
-            break
+    set_ships(main.field, ships, [1,1,1,1,2,2,2,3,3,4])
+    main.print_field(main.field)
