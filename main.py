@@ -285,7 +285,6 @@ def start():
             print("bot's turn")
 
             bot.set_ships(bot_field, bot_ships, placement_method)
-            print("bot cannot to place ships now") # временно
 
             game_mode = "attacking"
 
