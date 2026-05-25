@@ -6,10 +6,6 @@ import bot
 
 # ВЕЗДЕ [x, y], НИКАКОГО xy И ДРУГОЙ ЧУШИ!!!!!!!
 
-turn = "player"
-set_ship = "1"
-bot_name = "harpooner"
-
 # поле для игрока
 player_field = []
 player_ships = []
@@ -109,7 +105,7 @@ def randomize():
             # берем кажду клетку и ставим либо 0 либо 2
             field[i][j] = random.choice([0, 2])
 
-def fire(cell):
+def fire(field, cell):
     x, y = cell
     # если в клетку, которую мы стреляли является 
     # скрытым корабликом то меняем на огонь
@@ -225,12 +221,31 @@ def set_ship2(cell, dir, steps, field, ships, num):
     # добавить механику добавления корабля в список 
     # ships_player/bot_has
 
+def update(field1, field2, method):
+    for i in range(len(field1)):
+        for j in range(len(field1[i])):
+            if method == "to radar":
+                if field1[i][j] == 1:
+                    field2[i][j] = 0
+                elif field1[i][j] == 2:
+                    field2[i][j] = 2
+                else:
+                    field2[i][j] = field1[i][j] 
+            elif method == "to field":
+                if field1[i][j] == 0:
+                    field2[i][j] = 1
+                elif field1[i][j] == 2:
+                    field2[i][j] = 2
+                else:
+                    field2[i][j] = field1[i][j]
+            else: return False
+    return True
+
 def start():
-    global turn, set_ship, bot_name
-    turn = input("select 1st turn (default player): ")
-    set_ship = input("select set_ship (default 1): ")
-    bot_name = input("select bot (default harpooner): ")
-    placement_method = input("select placement method (default 1111222334): ")
+    turn = input("select 1st turn (default player): ") or "player"
+    set_ship = input("select set_ship (default 1): ") or "1"
+    bot_name = input("select bot (default harpooner): ") or "harpooner"
+    placement_method = input("select placement method (default 1111222334): ") or "1111222334"
     who_win = "nobody"
     game_mode = "placement" # attacking
 
@@ -252,14 +267,14 @@ def start():
                     while True:
                         raw_cell, dir, num = input().split(" ")
                         cell = [int(i) for i in raw_cell.split(",")]
-                        print(set_ship2(cell, dir, int(num), player_field, player_ships, 0))
 
-                        if set_ship1(cell1, cell2, player_field, player_ships, 1): break
+                        if set_ship2(cell, dir, int(num), player_field, player_ships, 0): break
                         else: print("iccorect input")
 
                 else:
                     print("incorrect set_ship")
                     break
+                os.system("clear")
 
             print("bot's turn")
 
@@ -268,57 +283,60 @@ def start():
 
             game_mode = "attacking"
 
-        # добавление bot_field в player_radar
-        for i in range(len(bot_field)):
-            for j in range(len(bot_field[i])):
-                if bot_field[i][j] == 1:
-                    player_radar[i][j] = 0
-                elif bot_field[i][j] == 2:
-                    player_radar[i][j] = 2
+            # добавление bot_field в player_radar
+            update(bot_field, player_radar, "to radar")
 
-        # добавление player_field в bot_radar
-        for i in range(len(player_field)):
-            for j in range(len(player_field[i])):
-                if player_field[i][j] == 1:
-                    bot_radar[i][j] = 0
-                elif player_field[i][j] == 2:
-                    bot_radar[i][j] = 2
+            # добавление player_field в bot_radar
+            update(player_field, bot_radar, "to radar")
         
-        # elif game_mode == "attacking":
-        #     if turn == "player":
-        #         print("player's turn")
-        #         print_field(player_field, player_radar)
-        #         while True:
-        #             cell = [int(i) for i in input().split(",")]
-        #             result = fire(cell)
-        #             if result[0]: 
-        #                 break
-        #             else: print("incorrect input")
-                
-        #         if not result[1]:
-        #             turn = "bot"
+        if game_mode == "attacking":
+            if turn == "player":
+                print("player's turn")
+                print_field(player_field, player_radar)
+                # print_field(bot_field, bot_radar)
 
-        #     elif turn == "bot":
-        #         print("bot's turn")
-
-        #         if bot_name == "greenhorn":
-        #             bot.greenhorn(bot_radar, bot_ships)
-        #         elif bot_name == "harpooner":
-        #             bot.harpooner(bot_radar, bot_ships)
-        #         elif bot_name == "navigator":
-        #             bot.navigator(bot_radar, bot_ships)
-        #         elif bot_name == "admiral":
-        #             bot.admiral(bot_radar, bot_ships)
-        #         elif bot_name == "master_seawolf":
-        #             print("master_seawolf doesn't work now")
-        #         else:
-        #             print("incorrect bot name")
+                while True:
+                    cell = [int(i) for i in input().split(",")]
+                    result = fire(player_radar, cell)
+                    if result[0]: 
+                        break
+                    else: print("incorrect input")
                 
-        #         turn = "player"
+                if not result[1]:
+                    turn = "bot"
+
+                update(player_radar, bot_field, "to field")
+
+            elif turn == "bot":
+                print("bot's turn.", end="\r")
+                time.sleep(0.3)
+                print("bot's turn..", end="\r")
+                time.sleep(0.3)
+                print("bot's turn...", end="\r")
+                time.sleep(0.3)
+                print()
+
+                if bot_name == "greenhorn":
+                    bot.greenhorn(bot_radar, player_ships)
+                elif bot_name == "harpooner":
+                    bot.harpooner(bot_radar, player_ships)
+                elif bot_name == "navigator":
+                    bot.navigator(bot_radar, player_ships)
+                elif bot_name == "admiral":
+                    bot.admiral(bot_radar, player_ships)
+                elif bot_name == "master_seawolf":
+                    print("master_seawolf doesn't work now")
+                else:
+                    print("incorrect bot name")
+                
+                turn = "player"
+
+                update(bot_radar, player_field, "to field")
             
-        #     else:
-        #         print("incorrect turn")
-        #         break
+            else:
+                print("incorrect turn")
+                break
+            os.system("clear")
     if who_win == "nobody":
         print("error")
         return False
