@@ -1,5 +1,5 @@
 import random, time, os
-import main
+# import main
 
 # 0 - скрытый корабль 🌊, 
 # 1 - открытый корабль 🚢, 
@@ -68,6 +68,9 @@ def clear_ship(field, ships, ship_idx):
                             field[y + dy][x + dx] = 3
     else: return False
     return True
+
+def set_ships(field, ships, placement_method):
+    pass
 
 def attack_mode(field, ships, bot): # для harpooner, navigator
     global directions, harpooner_mode, navigator_mode, x, y
@@ -423,35 +426,35 @@ def master_seawolf(field): # мастер Морской волк, карта + 
 # В играх сложность ботов обычно строится как «слоеный пирог»:
 # каждый следующий уровень включает в себя фишки предыдущего.
 
-if __name__ == "__main__":
-    ships = []
+# if __name__ == "__main__":
+#     ships = []
 
-    main.set_ship1([1,1], [1,1], main.field, ships)
-    main.set_ship1([3,2], [5,2], main.field, ships)
-    main.set_ship1([7,2], [8,2], main.field, ships)
-    main.set_ship1([1,3], [1,4], main.field, ships)
-    main.set_ship1([3,4], [6,4], main.field, ships)
+#     main.set_ship1([1,1], [1,1], main.field, ships)
+#     main.set_ship1([3,2], [5,2], main.field, ships)
+#     main.set_ship1([7,2], [8,2], main.field, ships)
+#     main.set_ship1([1,3], [1,4], main.field, ships)
+#     main.set_ship1([3,4], [6,4], main.field, ships)
 
-    main.set_ship1([8,4], [8,5], main.field, ships)
-    main.set_ship1([1,6], [3,6], main.field, ships)
-    main.set_ship1([5,6], [5,6], main.field, ships)
-    main.set_ship1([7,7], [7,7], main.field, ships)
-    main.set_ship1([4,8], [4,8], main.field, ships)
+#     main.set_ship1([8,4], [8,5], main.field, ships)
+#     main.set_ship1([1,6], [3,6], main.field, ships)
+#     main.set_ship1([5,6], [5,6], main.field, ships)
+#     main.set_ship1([7,7], [7,7], main.field, ships)
+#     main.set_ship1([4,8], [4,8], main.field, ships)
 
-    os.system("clear")
-    num = 1
+#     os.system("clear")
+#     num = 1
 
-    while True:
-        status = navigator(main.field, ships)
-        if status:
-            print(f"навигатор делает ход {num}...")
-            main.print_field(main.field)
-            # input()
-            time.sleep(0.1)
-            os.system("clear")
-            num += 1
-        else:
+#     while True:
+#         status = navigator(main.field, ships)
+#         if status:
+#             print(f"навигатор делает ход {num}...")
+#             main.print_field(main.field)
+#             # input()
+#             time.sleep(0.1)
+#             os.system("clear")
+#             num += 1
+#         else:
 
-            print(f"навигатор победил за ходов: {num}!")
-            main.print_field(main.field)
-            break
+#             print(f"навигатор победил за ходов: {num}!")
+#             main.print_field(main.field)
+#             break

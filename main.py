@@ -2,12 +2,13 @@
 import time
 import os
 import random
+import bot
 
 # ВЕЗДЕ [x, y], НИКАКОГО xy И ДРУГОЙ ЧУШИ!!!!!!!
 
 turn = "player"
 set_ship = "1"
-bot = "harpooner"
+bot_name = "harpooner"
 
 # поле для игрока
 player_field = []
@@ -79,6 +80,7 @@ def print_field(field1, field2):
     for n in range(2):
         for i in words:
             print(i, end="  ")
+        print("\t", end="   ")
     print()
 
     # перебор в списке поля
@@ -89,6 +91,8 @@ def print_field(field1, field2):
         # пишем каждую клетку
         for j in field1[i]:
             print(translate_to_emoji(j), end=" ")
+        print("\t", end="")
+        print(f" {i+1}" if i != 9 else f"{i+1}", end=" ")
         for j in field2[i]:
             print(translate_to_emoji(j), end=" ")
         print()
@@ -111,15 +115,15 @@ def fire(cell):
     # скрытым корабликом то меняем на огонь
     if field[y][x] == 0:
         field[y][x] = 4
+        return [True, True]
     
     # если скрытая пустышка то меняем на открытую
     elif field[y][x] == 2:
         field[y][x] = 3
+        return [True, False]
 
     else:
-        return False
-    
-    return True
+        return [False, True]
 
 def set_ship1(cell1, cell2, field, ships, num):
     # находим offset
@@ -222,35 +226,72 @@ def set_ship2(cell, dir, steps, field, ships, num):
     # ships_player/bot_has
 
 def start():
-    global turn, set_ship, bot
+    global turn, set_ship, bot_name
     turn = input("select 1st turn (default player): ")
     set_ship = input("select set_ship (default 1): ")
-    bot = input("select bot (harpooner): ")
+    bot_name = input("select bot (default harpooner): ")
+    placement_method = input("select placement method (default 1111222334): ")
     who_win = "nobody"
+    game_mode = "placement" # attacking
 
     while who_win == "nobody":
-        if turn == "player":
-            if set_ship == "1":
-                pass
+        if game_mode == "placement":
+            print("player's turn to place ships")
+            for i in list(placement_method):
+                print_field(player_field, player_radar)
+                if set_ship == "1":
+                    while True:
+                        raw_cell1, raw_cell2 = input().split(" ")
+                        cell1 = [int(i) for i in raw_cell1.split(",")]
+                        cell2 = [int(i) for i in raw_cell2.split(",")]
 
-            elif set_ship == "2":
-                pass
+                        if set_ship1(cell1, cell2, player_field, player_ships, 1): break
+                        else: print("incorrect input")
 
-            else:
-                print("incorrect set_ship")
-                break
-            
-            turn = "bot"
+                elif set_ship == "2":
+                    while True:
+                        raw_cell, dir, num = input().split(" ")
+                        cell = [int(i) for i in raw_cell.split(",")]
+                        print(set_ship2(cell, dir, int(num), player_field, player_ships, 0))
 
-        elif turn == "bot":
+                        if set_ship1(cell1, cell2, player_field, player_ships, 1): break
+                        else: print("iccorect input")
+
+                else:
+                    print("incorrect set_ship")
+                    break
+
+            print("bot's turn")
+
+            bot.set_ships(bot_field, bot_ships, placement_method)
+            print("bot cannot to place ships now") # временно
+
+            game_mode = "attacking"
+        # elif game_mode == "attacking":
+        #     if turn == "player":
+        #         print("player's turn")
+        #         print_field(player_field, player_radar)
+        #         while True:
+        #             cell = [int(i) for i in input().split(",")]
+        #             result = fire(cell)
+        #             if result[0]: 
+        #                 break
+        #             else: print("incorrect input")
+                
+        #         if not result[1]:
+        #             turn = "bot"
+
+        #     elif turn == "bot":
+        #         print("bot's turn")
+
+        #         if bot_name == "greenhorn":
+        #             bot.greenhorn(bot_radar, bot_ships)
+                
+        #         turn = "player"
             
-            
-            turn = "player"
-        
-        else:
-            print("incorrect turn")
-            break
-    
+        #     else:
+        #         print("incorrect turn")
+        #         break
     if who_win == "nobody":
         print("error")
         return False
@@ -286,13 +327,18 @@ def start():
 # и столконовение кораблей
 
 if __name__ == "__main__":
-    ships = []
-    while True:
-        print_field(field)
+    player_field = create_field()
+    player_radar = create_field()
+    bot_field = create_field()
+    bot_radar = create_field()
+    start()
+#     ships = []
+#     while True:
+#         print_field(field)
 
-        raw_cell, dir, num = input().split(" ")
-        cell = [int(i) for i in raw_cell.split(",")]
-        print(set_ship2(cell, dir, int(num), field, ships, 0))
+#         raw_cell, dir, num = input().split(" ")
+#         cell = [int(i) for i in raw_cell.split(",")]
+#         print(set_ship2(cell, dir, int(num), field, ships, 0))
 
-        time.sleep(0.5)
-        clear()
+#         time.sleep(0.5)
+#         clear()
