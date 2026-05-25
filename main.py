@@ -114,7 +114,7 @@ def fire(cell):
     
     return True
 
-def set_ship1(cell1, cell2, field, ships):
+def set_ship1(cell1, cell2, field, ships, placement_method=-1):
     # находим offset
     # (1, 0), (-1, 0), (0, 1), (0, -1)
     
@@ -124,6 +124,9 @@ def set_ship1(cell1, cell2, field, ships):
     dy = (cell2[1] > cell1[1]) - (cell2[1] < cell1[1])
     num = max(abs(cell2[0] - cell1[0]), abs(cell2[1] - cell1[1]))
     x, y = list(cell1)
+
+    if placement_method != num:
+        return False
 
     # предпологаем в каких координатах 
     # будет конец корабля
@@ -160,9 +163,12 @@ def set_ship1(cell1, cell2, field, ships):
 # куда будем его пихать
 # coordinate -> cell
 # direction -> dir
-def set_ship2(cell, dir, num, field, ships):    
+def set_ship2(cell, dir, num, field, ships, placement_method=-1):    
     # dir принимает udlr и ^v<>
     # для определения смещения dir
+    if placement_method != num:
+        return False
+    
     delta = {
         "v": (0, 1), "d": (0, 1),
         "^": (0, -1), "u": (0, -1),
