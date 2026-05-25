@@ -307,6 +307,12 @@ def start():
 
                 update(player_radar, bot_field, "to field")
 
+                res = True
+                for i in player_radar:
+                    if 0 in i: res = False
+                if res:
+                    who_win = "player"
+
             elif turn == "bot":
                 print("bot's turn.", end="\r")
                 time.sleep(0.3)
@@ -317,13 +323,13 @@ def start():
                 print()
 
                 if bot_name == "greenhorn":
-                    bot.greenhorn(bot_radar, player_ships)
+                    if not bot.greenhorn(bot_radar, player_ships): who_win = "bot"
                 elif bot_name == "harpooner":
-                    bot.harpooner(bot_radar, player_ships)
+                    if not bot.harpooner(bot_radar, player_ships): who_win = "bot"
                 elif bot_name == "navigator":
-                    bot.navigator(bot_radar, player_ships)
+                    if not bot.navigator(bot_radar, player_ships): who_win = "bot"
                 elif bot_name == "admiral":
-                    bot.admiral(bot_radar, player_ships)
+                    if not bot.admiral(bot_radar, player_ships): who_win = "bot"
                 elif bot_name == "master_seawolf":
                     print("master_seawolf doesn't work now")
                 else:
