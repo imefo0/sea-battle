@@ -71,60 +71,68 @@ def clear_ship(field, ships, ship_idx):
 
 def set_ships(field: list[list[int]], ships, placement_method: list[str]) -> bool:
     list_of_methods = list(map(int, placement_method))
+    attempts = 0
     for num in list_of_methods:
         while True:
-            cell = [random.randint(0, 9), random.randint(0, 9)]
-            # узнаем смещение
-            offset = random.choice([(0, 1), (0, -1), (-1, 0), (1, 0)])
+            while attempts <= 1000:
+                attempts += 1
+                cell = [random.randint(0, 9), random.randint(0, 9)]
+                # узнаем смещение
+                offset = random.choice([(0, 1), (0, -1), (-1, 0), (1, 0)])
 
-            # если неверный ввод
-            if offset == None: return False
+                # если неверный ввод
+                if offset == None: return False
 
-            # находим начальные координаты и 
-            # изменение для следующей палубы
-            dx, dy = offset
-            x, y = list(cell)
+                # находим начальные координаты и 
+                # изменение для следующей палубы
+                dx, dy = offset
+                x, y = list(cell)
 
-            # предпологаем в каких координатах 
-            # будет конец корабля
-            final_x = x + dx * num 
-            final_y = y + dy * num
+                # предпологаем в каких координатах 
+                # будет конец корабля
+                final_x = x + dx * num 
+                final_y = y + dy * num
 
-            ok = "ok"
-
-            # если корабль выходит за пределы карты
-            if any([final_x < -1, final_y < -1,
-                    final_x > 10, final_y > 10]):
-                ok = "continue"
-
-            list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
-                        (0, 1), (0, -1), (1, 0), (-1, 0),
-                        (0, 0)]
-            
-            for i in range(num):
-                for j in list_for_test:
-                    if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
-                        field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
-                        ok = "continue"
-            
-            if ok == "continue":
                 ok = "ok"
-                continue
 
-            # создаем новый корабль
-            ships.append([0])
+                # если корабль выходит за пределы карты
+                if any([final_x < -1, final_y < -1,
+                        final_x > 10, final_y > 10]):
+                    ok = "continue"
 
-            # заменяем каждую клетку которую надо
-            # на корабль
-            for _ in range(num):
-                field[y][x] = 0
+                list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
+                            (0, 1), (0, -1), (1, 0), (-1, 0),
+                            (0, 0)]
                 
-                ships[-1].insert(-1, [x, y, True])
-                ships[-1][-1] += 1
-                x += dx
-                y += dy
-            
-            break
+                for i in range(num):
+                    for j in list_for_test:
+                        if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
+                            field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
+                            ok = "continue"
+                
+                if ok == "continue":
+                    ok = "ok"
+                    continue
+
+                # создаем новый корабль
+                ships.append([0])
+
+                # заменяем каждую клетку которую надо
+                # на корабль
+                for _ in range(num):
+                    field[y][x] = 0
+                    
+                    ships[-1].insert(-1, [x, y, True])
+                    ships[-1][-1] += 1
+                    x += dx
+                    y += dy
+                
+                break
+            if attempts > 1000:
+                field = [[2 for _ in range(10)] for _ in range(10)]
+                attempts = 0
+            else:
+                break
     return True
 
 def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navigator
