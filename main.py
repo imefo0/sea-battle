@@ -304,12 +304,21 @@ def start():
                 while True:
                     cell = [int(i) for i in input().split(",")]
                     result = fire(player_radar, cell)
-                    if result[0]: 
+                    if result[0]:
                         break
                     else: print("incorrect input")
                 
                 if not result[1]:
                     turn = "bot"
+                else:
+                    # изменение в списке кораблей
+                    ship_idx, part_idx = bot.find_ship_by_cell(bot_ships, cell)
+                    bot_ships[ship_idx][part_idx][2] = False
+                    bot_ships[ship_idx][-1] -= 1
+
+                    # если убит
+                    if bot_ships[ship_idx][-1] == 0:
+                        bot.clear_ship(player_radar, bot_ships, ship_idx)
 
                 update(player_radar, bot_field, "to field")
 
