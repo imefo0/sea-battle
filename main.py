@@ -68,12 +68,12 @@ def add_part_of_ship(ships: list, ship_idx: int, part: list):
     return True
 
 # печатаем поле
-def print_field(field1, field2):
+def print_field(field1, field2=[-1]):
     words = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]
 
     # пишем все вертикали в виде букв
     print(end="   ")
-    for n in range(2):
+    for n in range(2 if field2 != [-1] else 1):
         for i in words:
             print(i, end="  ")
         print("\t", end="   ")
@@ -87,10 +87,11 @@ def print_field(field1, field2):
         # пишем каждую клетку
         for j in field1[i]:
             print(translate_to_emoji(j), end=" ")
-        print("\t", end="")
-        print(f" {i+1}" if i != 9 else f"{i+1}", end=" ")
-        for j in field2[i]:
-            print(translate_to_emoji(j), end=" ")
+        if field2 != [-1]:
+            print("\t", end="")
+            print(f" {i+1}" if i != 9 else f"{i+1}", end=" ")
+            for j in field2[i]:
+                print(translate_to_emoji(j), end=" ")
         print()
 
 # сменить ячейку
