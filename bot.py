@@ -1,4 +1,5 @@
 import random, time, os
+from debug import DEBUG, log
 # import main
 
 # 0 - скрытый корабль 🌊, 

@@ -3,22 +3,23 @@ import time
 import os
 import random
 import bot
+from debug import DEBUG, log
 
 # ВЕЗДЕ [x, y], НИКАКОГО xy И ДРУГОЙ ЧУШИ!!!!!!!
 
 # поле для игрока
-player_field = []
-player_ships = []
+player_field = [[2 for _ in range(10)] for _ in range(10)]
+player_ships = [[2 for _ in range(10)] for _ in range(10)]
 
 # поле где игрок атакует
-player_radar = []
+player_radar = [[2 for _ in range(10)] for _ in range(10)]
 
 # поле бота
-bot_field = []
-bot_ships = []
+bot_field = [[2 for _ in range(10)] for _ in range(10)]
+bot_ships = [[2 for _ in range(10)] for _ in range(10)]
 
 # поле где бот атакует
-bot_radar = []
+bot_radar = [[2 for _ in range(10)] for _ in range(10)]
 
 # само поле из скрытых пустышек
 field = [
@@ -394,10 +395,6 @@ def start():
 # и столконовение кораблей
 
 if __name__ == "__main__":
-    player_field = create_field()
-    player_radar = create_field()
-    bot_field = create_field()
-    bot_radar = create_field()
     start()
 #     ships = []
 #     while True:

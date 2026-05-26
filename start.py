@@ -1,10 +1,12 @@
 import sys
 import os
+import main, bot
+from debug import DEBUG, log
 
-def fast_start():
+def fast_start(result):
     pass
 
-def normal_start():
+def normal_start(result):
     pass
 
 def help_cmd():
@@ -58,20 +60,22 @@ def parse():
 
 if __name__ == "__main__":
     result = parse()
+    DEBUG = result[5] # --debug
 
     if result[3]: os.system("clear")
 
-    if result[0] and result[1]:
+    if result[0] and result[1]: # --help --vesion
         help_cmd()
         version()
         exit(0)
-    elif result[0]: help_cmd(); exit(0)
-    elif result[1]: version(); exit(0)
+    elif result[0]: help_cmd(); exit(0) # --help
+    elif result[1]: version(); exit(0) # --version
 
-    if result[2]:
+    if result[2]: # --fast
         pass
     else:
-        normal_start(result)
+        pass
+        # normal_start(result)
 
 
 # config    -                               изменение дефолтное значение
