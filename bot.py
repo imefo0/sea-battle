@@ -171,7 +171,7 @@ def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navig
                     harpooner_mode = "searching"
                 elif bot == "navigator":
                     navigator_mode = "searching"
-                return ["continue", True]
+            return ["continue", True]
 
         # если мимо
         elif field[y + dy][x + dx] == 2:
