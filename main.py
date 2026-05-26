@@ -132,7 +132,7 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
     steps = max(abs(cell2[0] - cell1[0]), abs(cell2[1] - cell1[1]))
     x, y = list(cell1)
 
-    if placement_method != steps + 1:
+    if placement_method != steps + 1 and placement_method != -1:
         return False
 
     # предпологаем в каких координатах 
@@ -173,7 +173,7 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
 def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
     # dir принимает udlr и ^v<>
     # для определения смещения dir
-    if placement_method != steps:
+    if placement_method != steps and placement_method != -1:
         return False
     
     delta = {
