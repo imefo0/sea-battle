@@ -49,6 +49,7 @@ for a in [
 
 
 def find_ship_by_cell(ships, cell):
+    log(f"ships = {ships}")
     x, y = list(cell)
     for ship_idx, ship in enumerate(ships):
         for part_idx, part in enumerate(ship[:-1]):

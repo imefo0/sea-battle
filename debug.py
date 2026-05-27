@@ -1,5 +1,8 @@
-DEBUG = False
+DEBUG = True
+CYAN = '\033[96m'
+RESET = '\033[0m'
+BOLD = '\033[1m'
 
-def log(*args, **kwargs):
+def log(string):
     if DEBUG:
-        print("[DEBUG]", *args, **kwargs)
+        print(f"{BOLD}{CYAN}[DEBUG]{RESET} {string}")

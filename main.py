@@ -5,18 +5,16 @@ import random
 import bot
 from debug import DEBUG, log
 
-# ВЕЗДЕ [x, y], НИКАКОГО xy И ДРУГОЙ ЧУШИ!!!!!!!
-
 # поле для игрока
 player_field = [[2 for _ in range(10)] for _ in range(10)]
-player_ships = [[2 for _ in range(10)] for _ in range(10)]
+player_ships = []
 
 # поле где игрок атакует
 player_radar = [[2 for _ in range(10)] for _ in range(10)]
 
 # поле бота
 bot_field = [[2 for _ in range(10)] for _ in range(10)]
-bot_ships = [[2 for _ in range(10)] for _ in range(10)]
+bot_ships = []
 
 # поле где бот атакует
 bot_radar = [[2 for _ in range(10)] for _ in range(10)]
@@ -249,11 +247,11 @@ def update(field1, field2, method):
             else: return False
     return True
 
-def start():
-    turn = input("select 1st turn (default player): ") or "player"
-    set_ship = input("select set_ship (default 1): ") or "1"
-    bot_name = input("select bot (default harpooner): ") or "harpooner"
-    placement_method = input("select placement method (default 1111222334): ") or "1111222334"
+def start(turn, set_ship, bot_name, placement_method):
+    # turn = input("select 1st turn (default player): ") or "player"
+    # set_ship = input("select set_ship (default 1): ") or "1"
+    # bot_name = input("select bot (default harpooner): ") or "harpooner"
+    # placement_method = input("select placement method (default 1111222334): ") or "1111222334"
     who_win = "nobody"
     game_mode = "placement" # attacking
 

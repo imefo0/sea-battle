@@ -7,9 +7,12 @@ def fast_start(result):
     pass
 
 def normal_start(result):
-    pass
+    print(result[7:])
+    main.start(*result[7:])
 
 def help_cmd():
+    print("флаг\tполная версия\tинформация\t\t\tзнач. по умолчанию")
+    print("-"*75)
     print("-h\t--help\t\tотладка по командам\t\tFalse")
     print("-v\t--version\tверсия игры\t\t\tFalse")
     print("-f\t--fast\t\tбыстрый запуск\t\t\tFalse")
@@ -74,8 +77,7 @@ if __name__ == "__main__":
     if result[2]: # --fast
         pass
     else:
-        pass
-        # normal_start(result)
+        normal_start(result)
 
 
 # config    -                               изменение дефолтное значение
