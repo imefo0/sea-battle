@@ -1,3 +1,5 @@
+import sys
+
 DEBUG = True
 CYAN = '\033[96m'
 RESET = '\033[0m'
