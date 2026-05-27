@@ -9,14 +9,14 @@ from debug import DEBUG, log
 
 # поле для игрока
 player_field = [[2 for _ in range(10)] for _ in range(10)]
-player_ships = [[2 for _ in range(10)] for _ in range(10)]
+player_ships = []
 
 # поле где игрок атакует
 player_radar = [[2 for _ in range(10)] for _ in range(10)]
 
 # поле бота
 bot_field = [[2 for _ in range(10)] for _ in range(10)]
-bot_ships = [[2 for _ in range(10)] for _ in range(10)]
+bot_ships = []
 
 # поле где бот атакует
 bot_radar = [[2 for _ in range(10)] for _ in range(10)]
