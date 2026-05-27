@@ -1,6 +1,4 @@
-import sys
-
-DEBUG = True
+DEBUG = False
 CYAN = '\033[96m'
 RESET = '\033[0m'
 BOLD = '\033[1m'

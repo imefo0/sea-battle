@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 import main, bot
-from debug import DEBUG, log
+import debug
 
 def get_latest_tag_master():
     try:
@@ -31,7 +31,6 @@ def fast_start(result):
     main.start(*result[7:])
 
 def normal_start(result):
-    print(result[7:])
     main.start(*result[7:])
 
 def help_cmd():
@@ -100,6 +99,9 @@ if __name__ == "__main__":
 
     if result[4]: # --random
         print("random ship placement will be added after 1.0.0")
+
+    if result[5]: # --debug
+        debug.DEBUG = True
 
     if result[2]: # --fast
         fast_start(result)
