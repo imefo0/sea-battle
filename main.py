@@ -5,8 +5,6 @@ import random
 import bot
 from debug import DEBUG, log
 
-# ВЕЗДЕ [x, y], НИКАКОГО xy И ДРУГОЙ ЧУШИ!!!!!!!
-
 # поле для игрока
 player_field = [[2 for _ in range(10)] for _ in range(10)]
 player_ships = []
@@ -70,6 +68,7 @@ def add_part_of_ship(ships: list, ship_idx: int, part: list):
 
 # печатаем поле
 def print_field(field1, field2=[-1]):
+    log("print_field")
     words = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]
 
     # пишем все вертикали в виде букв
@@ -97,6 +96,7 @@ def print_field(field1, field2=[-1]):
 
 # сменить ячейку
 def change_cell(cell, num, field):
+    log(f"change_cell, cell = {cell}, num = {num}")
     # выбираем field[y][x] и меняем на c_p_n[2]
     field[cell[1]][cell[0]] = num
 
@@ -109,6 +109,7 @@ def randomize():
 
 def fire(field, cell):
     x, y = cell
+    log(f"fire, x = {x}, y = {y}, field[y][x] = {field[y][x]}")
     # если в клетку, которую мы стреляли является 
     # скрытым корабликом то меняем на огонь
     if field[y][x] == 0:
@@ -124,6 +125,7 @@ def fire(field, cell):
         return [False, True]
 
 def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
+    log(f"set_ship1, cell1 = {cell1}, cell2 = {cell2}, num = {num}, method = {placement_method}")
     # находим offset
     # (1, 0), (-1, 0), (0, 1), (0, -1)
     
@@ -133,8 +135,10 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
     dy = (cell2[1] > cell1[1]) - (cell2[1] < cell1[1])
     steps = max(abs(cell2[0] - cell1[0]), abs(cell2[1] - cell1[1]))
     x, y = list(cell1)
+    log(f"dx = {dx}, dy = {dy}, steps = {steps}, x = {x}, y = {y}")
 
     if placement_method != steps + 1 and placement_method != -1:
+        log("корабль не соотвествует размеру метода постановки")
         return False
 
     # предпологаем в каких координатах 
@@ -143,6 +147,7 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
     # если корабль выходит за пределы карты
     if any([cell2[0] < 0, cell2[1] < 0,
             cell2[0] > 9, cell2[1] > 9]):
+        log("ОШИБКА: корабль не влезает")
         return False
 
     list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
@@ -152,10 +157,12 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
         for j in list_for_test:
             if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
                 field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
+                log("ОШИБКА: корабль пересекает другой корабль или стоит рядом меньше чем через 1 клетку")
                 return False
 
     # создаем новый корабль
     ships.append([0])
+    log("успешное создание")
 
     # заменяем каждую клетку которую надо
     # на корабль
@@ -173,9 +180,11 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
 # coordinate -> cell
 # direction -> dir
 def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
+    log(f"set_ship2, cell = {cell}, dir = {dir}, steps = {steps}, num = {num}, method = {placement_method}")
     # dir принимает udlr и ^v<>
     # для определения смещения dir
     if placement_method != steps and placement_method != -1:
+        log("корабль не соотвествует размеру метода постановки")
         return False
     
     delta = {
@@ -186,14 +195,18 @@ def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
     }
     # узнаем смещение
     offset = delta.get(dir)
+    log(f"offset = {offset}")
 
     # если неверный ввод
-    if offset == None: return False
+    if offset == None:
+        log("неверное направление")
+        return False
 
     # находим начальные координаты и 
     # изменение для следующей палубы
     dx, dy = offset
     x, y = list(cell)
+    log(f"x = {x}, y = {y}, dx = {dx}, dy = {dy}")
 
     # предпологаем в каких координатах 
     # будет конец корабля
@@ -203,6 +216,7 @@ def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
     # если корабль выходит за пределы карты
     if any([final_x < -1, final_y < -1,
             final_x > 10, final_y > 10]):
+        log("ОШИБКА: корабль не влезает")
         return False
 
     list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
@@ -212,10 +226,12 @@ def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
         for j in list_for_test:
             if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
                 field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
+                log("ОШИБКА: корабль пересекает другой корабль или стоит рядом меньше чем через 1 клетку")
                 return False
 
     # создаем новый корабль
     ships.append([0])
+    log("успешное создание")
 
     # заменяем каждую клетку которую надо
     # на корабль
@@ -230,6 +246,7 @@ def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
     # ships_player/bot_has
 
 def update(field1, field2, method):
+    log(f"update, method = {method}")
     for i in range(len(field1)):
         for j in range(len(field1[i])):
             if method == "to radar":
@@ -249,11 +266,12 @@ def update(field1, field2, method):
             else: return False
     return True
 
-def start():
-    turn = input("select 1st turn (default player): ") or "player"
-    set_ship = input("select set_ship (default 1): ") or "1"
-    bot_name = input("select bot (default harpooner): ") or "harpooner"
-    placement_method = input("select placement method (default 1111222334): ") or "1111222334"
+def start(turn, set_ship, bot_name, placement_method):
+    log(f"start, turn = {turn}, set_ship = {set_ship}, bot_name = {bot_name}, method = {placement_method}")
+    # turn = input("select 1st turn (default player): ") or "player"
+    # set_ship = input("select set_ship (default 1): ") or "1"
+    # bot_name = input("select bot (default harpooner): ") or "harpooner"
+    # placement_method = input("select placement method (default 1111222334): ") or "1111222334"
     who_win = "nobody"
     game_mode = "placement" # attacking
 
@@ -282,7 +300,7 @@ def start():
                 else:
                     print("incorrect set_ship")
                     break
-                os.system("clear")
+                if not DEBUG: os.system("clear")
 
             print("bot's turn to place ships")
             time.sleep(0.7)
@@ -290,6 +308,7 @@ def start():
             bot.set_ships(bot_field, bot_ships, placement_method)
 
             game_mode = "attacking"
+            log("расстановка завершена, режим атаки")
 
             # добавление bot_field в player_radar
             update(bot_field, player_radar, "to radar")
@@ -311,8 +330,10 @@ def start():
                     else: print("incorrect input")
                 
                 if not result[1]:
+                    log("промах")
                     turn = "bot"
                 else:
+                    log("попал")
                     # изменение в списке кораблей
                     ship_idx, part_idx = bot.find_ship_by_cell(bot_ships, cell)
                     bot_ships[ship_idx][part_idx][2] = False
@@ -320,6 +341,7 @@ def start():
 
                     # если убит
                     if bot_ships[ship_idx][-1] == 0:
+                        log("и убил")
                         bot.clear_ship(player_radar, bot_ships, ship_idx)
 
                 update(player_radar, bot_field, "to field")
@@ -331,13 +353,8 @@ def start():
                     who_win = "player"
 
             elif turn == "bot":
-                print("bot's turn.", end="\r")
-                time.sleep(0.3)
-                print("bot's turn..", end="\r")
-                time.sleep(0.3)
-                print("bot's turn...", end="\r")
-                time.sleep(0.3)
-                print()
+                print("bot's turn")
+                time.sleep(0.5)
 
                 if bot_name == "greenhorn":
                     if not bot.greenhorn(bot_radar, player_ships): who_win = "bot"
@@ -359,19 +376,19 @@ def start():
             else:
                 print("incorrect turn")
                 break
-            os.system("clear")
+            if not DEBUG: os.system("clear")
     if who_win == "nobody":
+        log(f"ошибка: никто не выиграл, who_win = {who_win}")
         print("error")
         return False
 
     elif who_win == "bot":
         print("bot won!")
+        print_field(player_field, player_radar)
     elif who_win == "player":
         print("player won!")
+        print_field(player_field, player_radar)
     return True
-
-# нормально сделать чтобы корды были везде через [x, y], 
-# а не как попало
 
 # ships = []
 # while True:
@@ -395,7 +412,7 @@ def start():
 # и столконовение кораблей
 
 if __name__ == "__main__":
-    start()
+    start("player", "1", "harpooner", "1111222334")
 #     ships = []
 #     while True:
 #         print_field(field)
