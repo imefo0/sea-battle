@@ -1,9 +1,31 @@
 import sys
 import os
-
+import subprocess
 import main, bot
 from debug import DEBUG, log
 
+def get_latest_tag_master():
+    try:
+        return subprocess.check_output(
+            ['git', 'describe', '--tags', '--abbrev=0', 'master'],
+            text=True,
+            stderr=subprocess.DEVNULL
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return "unknown"
+
+def get_latest_tag_over_all_time():
+    try:
+        # Вариант без пайпа (через shell)
+        result = subprocess.check_output(
+            "git tag --sort=-creatordate | head -1",
+            shell=True,
+            text=True,
+            stderr=subprocess.DEVNULL
+        ).strip()
+        return result if result else "unknown"
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return "unknown"
 
 def fast_start(result):
     main.start(*result[7:])
@@ -30,7 +52,7 @@ def help_cmd():
     print("-m\t--method\tспособ постановки корабля\t1111222334")
 
 def version():
-    print("Sea Battle\tActual: v0.6.6\n\t\tNewest: v0.7.0a1S")
+    print(f"Sea Battle\tActual: {get_latest_tag_master()}\n\t\tNewest: {get_latest_tag_over_all_time()}")
 
 def parse():
     c = sys.argv[1:]
