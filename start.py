@@ -1,7 +1,7 @@
 import sys
 import os
 import subprocess
-import main, bot
+import language as l
 import debug
 
 def get_latest_tag_master():
@@ -16,7 +16,6 @@ def get_latest_tag_master():
 
 def get_latest_tag_over_all_time():
     try:
-        # Вариант без пайпа (через shell)
         result = subprocess.check_output(
             "git tag --sort=-creatordate | head -1",
             shell=True,
@@ -28,30 +27,28 @@ def get_latest_tag_over_all_time():
         return "unknown"
 
 def fast_start(result):
-    main.start(*result[7:])
+    __import__('main').start(*result[7:])
 
 def normal_start(result):
-    main.start(*result[7:])
+    __import__('main').start(*result[7:])
 
 def help_cmd():
-    print("флаг\tполная версия\tинформация\t\t\tзнач. по умолчанию")
-    print("-"*75)
-    print("-h\t--help\t\tотладка по командам\t\tFalse")
-    print("-v\t--version\tверсия игры\t\t\tFalse")
-    print("-f\t--fast\t\tбыстрый запуск\t\t\tFalse")
-    print("\t\t\t(автоматически -c -r -s 1 -m")
-    print("\t\t\t1111222334 -b harpooner -t")
-    print("\t\t\tplayer, без задержки")
-    print("\t\t\t(bot's turn...))")
-    print("-c\t--clear\t\tочистить консоль перед игрой\tFalse")
-    print("-r\t--random\tслучайные корабли\t\tFalse")
-    print("-d\t--debug\t\tспециальная отладка для\t\tFalse")
-    print("\t\t\tразработчиков")
-    print("-l\t--language\tязык игры\t\t\ten")
-    print("-t\t--turn\t\tпервый игрок\t\t\tplayer")
-    print("-s\t--set-ship\tвид постановки корабля\t\t1")
-    print("-b\t--bot\t\tзапустить бота\t\t\tharpooner")
-    print("-m\t--method\tспособ постановки корабля\t1111222334")
+    print(l.msg(f"Using: python3 start.py [-c] [-d] [-f] [-r] [-b BOT] [-t TURN] [-s MODE] [-m METHOD] [-l LANG]"))
+    print()
+    print(f"{l.msg("flag")}{l.msg("full version")}{l.msg("info")}{l.msg("default value")}")
+    print(f"-"*75)
+    print(f"-h\t--help\t\t{l.msg("help with commands")}False")
+    print(f"-v\t--version\t{l.msg("game version")}False")
+    print(f"-f\t--fast\t\t{l.msg("fast start")}False")
+    print(f"\t\t\t{l.msg("(automatic set -c -r -s 1 -m 1111222334 -b harpooner -t player)")}")
+    print(f"-c\t--clear\t\t{l.msg("clear console before the game")}False")
+    print(f"-r\t--random\t{l.msg("random placement ships")}False")
+    print(f"-d\t--debug\t\t{l.msg("special debug for developers")}")
+    print(f"-l\t--language\t{l.msg("game language [ru/en]")}en")
+    print(f"-t\t--turn\t\t{l.msg("1st player")}player")
+    print(f"-s\t--set-ship\t{l.msg("ship placement type")}1")
+    print(f"-b\t--bot\t\t{l.msg("type of bot")}harpooner")
+    print(f"-m\t--method\t{l.msg("method to place ships")}1111222334")
 
 def version():
     print(f"Sea Battle\tActual: {get_latest_tag_master()}\n\t\tNewest: {get_latest_tag_over_all_time()}")
@@ -76,7 +73,7 @@ def parse():
                 return default
         return default
     
-    language = get_arg('-l', '--language', 'ru')
+    language = get_arg('-l', '--language', 'en')
     turn = get_arg('-t', '--turn', 'player')
     set_ship = get_arg('-s', '--set-ship', '1')
     bot_name = get_arg('-b', '--bot', 'harpooner')
@@ -86,7 +83,9 @@ def parse():
 
 if __name__ == "__main__":
     result = parse()
-    DEBUG = result[5] # --debug
+    debug.DEBUG = result[5] # --debug
+    l.LANGUAGE = result[6] # --language
+    # print(result)
 
     if result[3]: os.system("clear")
 
@@ -99,9 +98,6 @@ if __name__ == "__main__":
 
     if result[4]: # --random
         print("random ship placement will be added after 1.0.0")
-
-    if result[5]: # --debug
-        debug.DEBUG = True
 
     if result[2]: # --fast
         fast_start(result)
@@ -125,7 +121,7 @@ if __name__ == "__main__":
 # -r    --random    случайные корабли               False
 # -d    --debug     специальная отладка для         False
 #                   разработчиков                   
-# -l    --language  язык игры                       en
+# -l    --language  язык игры [ru/en]               en
 # -t    --turn      первый игрок                    player
 # -s    --set-ship  вид постановки корабля          1
 # -b    --bot       запустить бота                  harpooner

@@ -4,6 +4,7 @@ import os
 import random
 import bot
 from debug import DEBUG, log
+from language import LANGUAGE, msg
 
 # поле для игрока
 player_field = [[2 for _ in range(10)] for _ in range(10)]
@@ -33,6 +34,9 @@ field = [
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 ]
 
+words = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"] if LANGUAGE == "ru" else \
+    ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+
 # перечисление эмоджи
 emoji = ["🌊", "🚢", "🌊", "🔹", "💥", "❌️"]
 # 0 - скрытый корабль 🌊, 
@@ -51,7 +55,6 @@ def translate_to_emoji(num):
 
 # перевод в y через буквы
 def translate_from_word(word):
-    words = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]
     return words.index(word.capitalize())
 
 # перевод из y в буквы
@@ -69,7 +72,6 @@ def add_part_of_ship(ships: list, ship_idx: int, part: list):
 # печатаем поле
 def print_field(field1, field2=[-1]):
     log("print_field")
-    words = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]
 
     # пишем все вертикали в виде букв
     print(end="   ")
@@ -277,7 +279,7 @@ def start(turn, set_ship, bot_name, placement_method):
 
     while who_win == "nobody":
         if game_mode == "placement":
-            print("player's turn to place ships")
+            print(msg("player's turn to place ships"))
             for i in list(placement_method):
                 print_field(player_field, player_radar)
                 if set_ship == "1":
@@ -287,7 +289,7 @@ def start(turn, set_ship, bot_name, placement_method):
                         cell2 = [int(i) for i in raw_cell2.split(",")]
 
                         if set_ship1(cell1, cell2, player_field, player_ships, 1, int(i)): break
-                        else: print("incorrect input")
+                        else: print(msg("incorrect input"))
 
                 elif set_ship == "2":
                     while True:
@@ -295,14 +297,14 @@ def start(turn, set_ship, bot_name, placement_method):
                         cell = [int(i) for i in raw_cell.split(",")]
 
                         if set_ship2(cell, dir, int(num), player_field, player_ships, 1, int(i)): break
-                        else: print("iccorect input")
+                        else: print(msg("iccorect input"))
 
                 else:
-                    print("incorrect set_ship")
+                    print(msg("incorrect set-ship value"))
                     break
                 if not DEBUG: os.system("clear")
 
-            print("bot's turn to place ships")
+            print(msg("bot's turn to place ships"))
             time.sleep(0.7)
 
             bot.set_ships(bot_field, bot_ships, placement_method)
@@ -318,7 +320,7 @@ def start(turn, set_ship, bot_name, placement_method):
         
         if game_mode == "attacking":
             if turn == "player":
-                print("player's turn")
+                print(msg("player's turn"))
                 print_field(player_field, player_radar)
                 # print_field(bot_field, bot_radar)
 
@@ -327,7 +329,7 @@ def start(turn, set_ship, bot_name, placement_method):
                     result = fire(player_radar, cell)
                     if result[0]:
                         break
-                    else: print("incorrect input")
+                    else: print(msg("incorrect input"))
                 
                 if not result[1]:
                     log("промах")
@@ -353,7 +355,7 @@ def start(turn, set_ship, bot_name, placement_method):
                     who_win = "player"
 
             elif turn == "bot":
-                print("bot's turn")
+                print(msg("bot's turn"))
                 time.sleep(0.5)
 
                 if bot_name == "greenhorn":
@@ -365,28 +367,28 @@ def start(turn, set_ship, bot_name, placement_method):
                 elif bot_name == "admiral":
                     if not bot.admiral(bot_radar, player_ships): who_win = "bot"
                 elif bot_name == "master_seawolf":
-                    print("master_seawolf doesn't work now")
+                    print(msg("master_seawolf doesn't work now"))
                 else:
-                    print("incorrect bot name")
+                    print(msg("incorrect bot name"))
                 
                 turn = "player"
 
                 update(bot_radar, player_field, "to field")
             
             else:
-                print("incorrect turn")
+                print(msg("incorrect turn"))
                 break
             if not DEBUG: os.system("clear")
     if who_win == "nobody":
         log(f"ошибка: никто не выиграл, who_win = {who_win}")
-        print("error")
+        print(msg("error"))
         return False
 
     elif who_win == "bot":
-        print("bot won!")
+        print(msg("bot won"))
         print_field(player_field, player_radar)
     elif who_win == "player":
-        print("player won!")
+        print(msg("player won"))
         print_field(player_field, player_radar)
     return True
 
