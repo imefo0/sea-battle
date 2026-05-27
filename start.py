@@ -1,10 +1,12 @@
 import sys
 import os
+
 import main, bot
 from debug import DEBUG, log
 
+
 def fast_start(result):
-    pass
+    main.start(*result[7:])
 
 def normal_start(result):
     pass
@@ -72,7 +74,7 @@ if __name__ == "__main__":
     elif result[1]: version(); exit(0) # --version
 
     if result[2]: # --fast
-        pass
+        fast_start(result)
     else:
         pass
         # normal_start(result)
@@ -81,7 +83,7 @@ if __name__ == "__main__":
 # config    -                               изменение дефолтное значение
 # config default                            дефолтные настройки конфига
 # config imefo.flags.set-ship --default     сбросить метод set-ship у дефолтных значений у пользователя imefo
-# confing user.flags.debug true             изменить у пользователя user флаг debug на true всегда
+# config user.flags.debug true             изменить у пользователя user флаг debug на true всегда
 # -------------------------------------------------------------
 # -h    --help      отладка по командам             False
 # -v    --version   версия игры                     False

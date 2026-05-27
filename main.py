@@ -249,11 +249,11 @@ def update(field1, field2, method):
             else: return False
     return True
 
-def start():
-    turn = input("select 1st turn (default player): ") or "player"
-    set_ship = input("select set_ship (default 1): ") or "1"
-    bot_name = input("select bot (default harpooner): ") or "harpooner"
-    placement_method = input("select placement method (default 1111222334): ") or "1111222334"
+def start(turn, set_ship, bot_name, placement_method):
+    # turn = input("select 1st turn (default player): ") or "player"
+    # set_ship = input("select set_ship (default 1): ") or "1"
+    # bot_name = input("select bot (default harpooner): ") or "harpooner"
+    # placement_method = input("select placement method (default 1111222334): ") or "1111222334"
     who_win = "nobody"
     game_mode = "placement" # attacking
 
@@ -395,7 +395,7 @@ def start():
 # и столконовение кораблей
 
 if __name__ == "__main__":
-    start()
+    start("player", "1", "harpooner", "1111222334")
 #     ships = []
 #     while True:
 #         print_field(field)
