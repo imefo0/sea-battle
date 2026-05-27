@@ -71,6 +71,9 @@ if __name__ == "__main__":
     elif result[0]: help_cmd(); exit(0) # --help
     elif result[1]: version(); exit(0) # --version
 
+    if result[4]: # --random
+        print("random ship placement will be added after 1.0.0")
+
     if result[2]: # --fast
         pass
     else:
