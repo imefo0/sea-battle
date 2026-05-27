@@ -147,7 +147,7 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
     # если корабль выходит за пределы карты
     if any([cell2[0] < 0, cell2[1] < 0,
             cell2[0] > 9, cell2[1] > 9]):
-        log("корабль не влезает")
+        log("ОШИБКА: корабль не влезает")
         return False
 
     list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
@@ -157,7 +157,7 @@ def set_ship1(cell1, cell2, field, ships, num, placement_method=-1):
         for j in list_for_test:
             if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
                 field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
-                log("корабль пересекает другой корабль или стоит рядом меньше чем через 1 клетку")
+                log("ОШИБКА: корабль пересекает другой корабль или стоит рядом меньше чем через 1 клетку")
                 return False
 
     # создаем новый корабль
@@ -216,7 +216,7 @@ def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
     # если корабль выходит за пределы карты
     if any([final_x < -1, final_y < -1,
             final_x > 10, final_y > 10]):
-        log("корабль не влезает")
+        log("ОШИБКА: корабль не влезает")
         return False
 
     list_for_test = [(-1, -1), (1, 1), (-1, 1), (1, -1),
@@ -226,7 +226,7 @@ def set_ship2(cell, dir, steps, field, ships, num, placement_method=-1):
         for j in list_for_test:
             if 0 <= y + dy*i + j[1] <= 9 and 0 <= x + dx*i + j[0] <= 9 and \
                 field[y + dy * i + j[1]][x + dx * i + j[0]] in [0, 1, 4, 5]:
-                log("корабль пересекает другой корабль или стоит рядом меньше чем через 1 клетку")
+                log("ОШИБКА: корабль пересекает другой корабль или стоит рядом меньше чем через 1 клетку")
                 return False
 
     # создаем новый корабль
@@ -369,7 +369,6 @@ def start(turn, set_ship, bot_name, placement_method):
                 else:
                     print("incorrect bot name")
                 
-                log("бот промахнулся")
                 turn = "player"
 
                 update(bot_radar, player_field, "to field")
