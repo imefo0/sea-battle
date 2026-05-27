@@ -385,8 +385,10 @@ def start(turn, set_ship, bot_name, placement_method):
 
     elif who_win == "bot":
         print("bot won!")
+        print_field(player_field, player_radar)
     elif who_win == "player":
         print("player won!")
+        print_field(player_field, player_radar)
     return True
 
 # ships = []
