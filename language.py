@@ -32,7 +32,13 @@ TEXTS = {
         "1st player": "1-ый игрок\t\t\t",
         "ship placement type": "вид постановки кораблей\t\t",
         "type of bot": "тип бота\t\t\t",
-        "method to place ships": "способ постановки кораблей\t"
+        "method to place ships": "способ постановки кораблей\t",
+
+        "Sea Battle": "Морской Бой",
+        "1) New Game": "1) Новая Игра",
+        "2) Settings": "2) Настройки",
+        "3) Quit": "3) Выход",
+        "Select an Item": "Выберете Пункт"
     },
     "en": {
         "player's turn to place ships": "player's turn to place ships",

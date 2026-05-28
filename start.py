@@ -26,11 +26,124 @@ def get_latest_tag_over_all_time():
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "unknown"
 
+def main_menu(result):
+    distance = 20
+    status = ["no", "en", "player", "1 (for ex. A1 E1)", "1111222334", "harpooner"]
+    while True:
+        print("-"*distance, l.msg("Sea Battle"), "-"*distance)
+        print("\t", l.msg("1) New Game"))
+        print("\t", l.msg("2) Settings"))
+        print("\t", l.msg("3) Quit"))
+
+        print()
+        print(l.msg("Select an Item"))
+
+        while True:
+            choice = input("> ")
+            if choice not in ["1", "2", "3"]:
+                print(l.msg("Incorrect input"))
+            else:
+                break
+
+        if choice == "1":
+            normal_start(result)
+        elif choice == "2":
+            while True:
+                print("-"*distance, "Settings", "-"*distance)
+                print(f"\tSetting\t\t\t\tStatus")
+                print(f"\t1) Start Game\t\t\tYES")
+                print(f"\t2) Random Placement Ships\t{status[0]}")
+                print(f"\t3) Game Language\t\t{status[1]}")
+                print(f"\t4) 1st Player\t\t\t{status[2]}")
+                print(f"\t5) Ship Placement Type\t\t{status[3]}")
+                print(f"\t6) Method to Place Ships\t{status[4]}")
+                print(f"\t7) Bot Name\t\t\t{status[5]}")
+                print(f"\t8) Exit\t\t\t\tNO")
+
+                print("Which option do you want to change?")
+                while True:
+                    choice = input("> ")
+                    if choice not in list(map(str, range(1, 9))):
+                        print("Incorrect input")
+                    else:
+                        break
+
+                if choice == "1":
+                    #   0       1       2     3       4      5        6      7       8         9        10     11
+                    # [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, menu]
+                    result[4] = False if status[0] == "no" else True # random
+                    result[6] = status[1]
+                    result[7] = status[2]
+                    result[8] = status[3][0]
+                    result[9] = status[5]
+                    result[10] = status[4]
+                    normal_start(result)
+                    status = ["no", "en", "player", "1 (for ex. A1 JI)", "1111222334", "harpooner"]
+                    break
+                elif choice == "2":
+                    while True:
+                        choice = input("What do you want to exchange it for? [yes/no] ")
+                        if choice not in ["no", "yes"]:
+                            print("Incorrect input")
+                        else: 
+                            break
+                    status[0] = choice
+                elif choice == "3":
+                    while True:
+                        choice = input("What do you want to exchange it for? [ru/en] ")
+                        if choice not in ["ru", "en"]:
+                            print("Incorrect input")
+                        else: 
+                            break
+                    status[1] = choice
+                elif choice == "4":
+                    while True:
+                        choice = input("What do you want to exchange it for? [player/bot] ")
+                        if choice not in ["player", "bot"]:
+                            print("Incorrect input")
+                        else: 
+                            break
+                    status[2] = choice
+                elif choice == "5":
+                    while True:
+                        choice = input("What do you want to exchange it for? [1/2] (1: A1 E1, 2: A1 > 5 / A1 r 5) ")
+                        if choice == "1":
+                            status[3] = choice + " (for ex. A1 E1)"
+                            break
+                        elif choice == "2":
+                            status[3] = choice + " (for ex. A1 >/r 5)"
+                            break
+                        else:
+                            print("Incorrect input")
+                elif choice == "6":
+                    while True:
+                        choice = input("What do you want to exchange it for? ")
+                        if not choice.isdigit():
+                            print("Incorrect input")
+                        else: 
+                            break
+                    status[4] = choice
+                elif choice == "7":
+                    while True:
+                        choice = input("What do you want to exchange it for? [greenhorn/harpooner/navigator/admiral/master_seawolf] ")
+                        if choice not in ["greenhorn", "harpooner", "navigator", "admiral", "master_seawolf"]:
+                            print("Incorrect input")
+                        else: 
+                            break
+                    status[5] = choice
+                elif choice == "8":
+                    print("Exit")
+                    break
+            
+        else:
+            print("Quit")
+            break
+
 def fast_start(result):
-    __import__('main').start(*result[7:])
+    __import__('main').start(*result[7:-1])
 
 def normal_start(result):
-    __import__('main').start(*result[7:])
+    __import__('main').start(*result[7:-1])
 
 def help_cmd():
     print(l.msg(f"Using: python3 start.py [-c] [-d] [-f] [-r] [-b BOT] [-t TURN] [-s MODE] [-m METHOD] [-l LANG]"))
@@ -52,6 +165,9 @@ def help_cmd():
 
 def version():
     print(f"Sea Battle\tActual: {get_latest_tag_master()}\n\t\tNewest: {get_latest_tag_over_all_time()}")
+
+def flag_in_cmd(short_flag, long_flag, cmd) -> bool:
+    return short_flag in cmd or long_flag in cmd
 
 def parse():
     c = sys.argv[1:]
@@ -78,31 +194,39 @@ def parse():
     set_ship = get_arg('-s', '--set-ship', '1')
     bot_name = get_arg('-b', '--bot', 'harpooner')
     method = get_arg('-m', '--method', '1111222334')
-    
-    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method]
+
+    menu = not any([help, version, fast, random, debug, flag_in_cmd("-t", "--turn", c),
+                    flag_in_cmd("-s", "--set-ship", c), flag_in_cmd("-b", "--bot", c),
+                    flag_in_cmd("-m", "--method", c)])
+
+    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, menu]
 
 if __name__ == "__main__":
     result = parse()
-    debug.DEBUG = result[5] # --debug
-    l.LANGUAGE = result[6] # --language
-    # print(result)
 
-    if result[3]: os.system("clear")
-
-    if result[0] and result[1]: # --help --vesion
-        help_cmd()
-        version()
-        exit(0)
-    elif result[0]: help_cmd(); exit(0) # --help
-    elif result[1]: version(); exit(0) # --version
-
-    if result[4]: # --random
-        print("random ship placement will be added after 1.0.0")
-
-    if result[2]: # --fast
-        fast_start(result)
+    if result[-1]: # menu
+        main_menu(result)
     else:
-        normal_start(result)
+        debug.DEBUG = result[5] # --debug
+        l.LANGUAGE = result[6] # --language
+        # print(result)
+
+        if result[3]: os.system("clear")
+
+        if result[0] and result[1]: # --help --vesion
+            help_cmd()
+            version()
+            exit(0)
+        elif result[0]: help_cmd(); exit(0) # --help
+        elif result[1]: version(); exit(0) # --version
+
+        if result[4]: # --random
+            print("random ship placement will be added after 1.0.0")
+
+        if result[2]: # --fast
+            fast_start(result)
+        else:
+            normal_start(result)
 
 
 # config    -                               изменение дефолтное значение
@@ -126,3 +250,5 @@ if __name__ == "__main__":
 # -s    --set-ship  вид постановки корабля          1
 # -b    --bot       запустить бота                  harpooner
 # -m    --method    способ постановки корабля       1111222334
+# -M    --menu      включить главное меню для       False 
+#                   настроек
