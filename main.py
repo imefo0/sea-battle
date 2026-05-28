@@ -289,19 +289,21 @@ def start():
                 print_field(player_field, player_radar)
                 if set_ship == "1":
                     while True:
-                        raw_cell1, raw_cell2 = input().split(" ")
-                        cell1 = [int(i) for i in raw_cell1.split(",")]
-                        cell2 = [int(i) for i in raw_cell2.split(",")]
+                        cmd = parse(input(), "1")
+                        # raw_cell1, raw_cell2 = input().split(" ")
+                        # cell1 = [int(i) for i in raw_cell1.split(",")]
+                        # cell2 = [int(i) for i in raw_cell2.split(",")]
 
-                        if set_ship1(cell1, cell2, player_field, player_ships, 1, int(i)): break
+                        if set_ship1(*cmd, player_field, player_ships, 1, int(i)): break
                         else: print("incorrect input")
 
                 elif set_ship == "2":
                     while True:
-                        raw_cell, dir, num = input().split(" ")
-                        cell = [int(i) for i in raw_cell.split(",")]
+                        cmd = parse(input(), "2")
+                        # raw_cell, dir, num = input().split(" ")
+                        # cell = [int(i) for i in raw_cell.split(",")]
 
-                        if set_ship2(cell, dir, int(num), player_field, player_ships, 1, int(i)): break
+                        if set_ship2(*cmd, player_field, player_ships, 1, int(i)): break
                         else: print("iccorect input")
 
                 else:
@@ -420,6 +422,10 @@ def start():
 # и столконовение кораблей
 
 if __name__ == "__main__":
+    player_field = create_field()
+    player_radar = create_field()
+    bot_field = create_field()
+    bot_radar = create_field()
     start()
 #     ships = []
 #     while True:
