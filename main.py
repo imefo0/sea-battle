@@ -72,8 +72,11 @@ def add_part_of_ship(ships: list, ship_idx: int, part: list):
 
 def parse(command: str, set_ship: str):
     if set_ship == "1": # "A1 J4"
-        cmds = list(map(list, command.lower().split(" "))) # [["a", "1"], ["j", "4"]]
+        cmds = command.lower().split(" ") # ["a1" "j4"]
         result = []
+        for x in cmds:
+            cmds[cmds.index(x)] = [cmds[cmds.index(x)][0], cmds[cmds.index(x)][1:]]
+            # [["a", "1"], ["j", "4"]]
         for i in cmds: # ["a", "1"] ["j", "4"]
             result.append([])
             for j in i: # a 1 j 4
@@ -85,7 +88,8 @@ def parse(command: str, set_ship: str):
         return result
     elif set_ship == "2": # "A1 > 5"
         cmds = command.split(" ") # ["A1", ">", "5"]
-        cmds[0] = list(cmds[0].lower()) # [["a", "1"], ">", "5"]
+        cmds[0] = cmds[0].lower() # ["a1", ">", "5"]
+        cmds[0] = [cmds[0][0], int(cmds[0][1:])]
         if cmds[0][0] in ru_words_to_parse: cmds[0][0] = ru_words_to_parse.index(cmds[0][0])
         elif cmds[0][0] in en_words_to_parse: cmds[0][0] = en_words_to_parse.index(cmds[0][0])
         cmds[-1] = int(cmds[-1])
