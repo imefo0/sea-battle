@@ -20,6 +20,9 @@ bot_ships = []
 # поле где бот атакует
 bot_radar = []
 
+en_words_to_parse = list("abcdefghij")
+ru_words_to_parse = list("абвгдежзик")
+
 # само поле из скрытых пустышек
 field = [
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -66,6 +69,29 @@ def add_part_of_ship(ships: list, ship_idx: int, part: list):
     ships[ship_idx].insert(-1, part)
     ships[ship_idx][-1] += 1
     return True
+
+def parse(command: str, set_ship: str):
+    if set_ship == "1": # "A1 J4"
+        cmds = list(map(list, command.lower().split(" "))) # [["a", "1"], ["j", "4"]]
+        result = []
+        for i in cmds: # ["a", "1"] ["j", "4"]
+            result.append([])
+            for j in i: # a 1 j 4
+                if j.isdigit():
+                    result[-1].append(int(j) - 1)
+                else:
+                    if j in ru_words_to_parse: result[-1].append(ru_words_to_parse.index(j))
+                    elif j in en_words_to_parse: result[-1].append(en_words_to_parse.index(j))
+        return result
+    elif set_ship == "2": # "A1 > 5"
+        cmds = command.split(" ") # ["A1", ">", "5"]
+        cmds[0] = list(cmds[0].lower()) # [["a", "1"], ">", "5"]
+        if cmds[0][0] in ru_words_to_parse: cmds[0][0] = ru_words_to_parse.index(cmds[0][0])
+        elif cmds[0][0] in en_words_to_parse: cmds[0][0] = en_words_to_parse.index(cmds[0][0])
+        cmds[-1] = int(cmds[-1])
+        cmds[0][1] = int(cmds[0][1]) - 1
+        return cmds # [[0, 0], ">", 5]
+    
 
 # печатаем поле
 def print_field(field1, field2=[-1]):
@@ -394,10 +420,6 @@ def start():
 # и столконовение кораблей
 
 if __name__ == "__main__":
-    player_field = create_field()
-    player_radar = create_field()
-    bot_field = create_field()
-    bot_radar = create_field()
     start()
 #     ships = []
 #     while True:
