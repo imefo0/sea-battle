@@ -65,11 +65,7 @@ TEXTS = {
         "master_seawolf": "мастер_морской_волк",
         "Which option do you want to change?": "Какую настройку вы хотите изменить?",
         "for ex.": "например",
-        "What do you want to exchange it for?": "Что вы хотите изменить?",
-        "": "",
-        "": "",
-        "": ""
-
+        "What do you want to exchange it for?": "Что вы хотите изменить?"
     },
     "en": {
         "player's turn to place ships": "player's turn to place ships",
