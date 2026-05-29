@@ -28,12 +28,13 @@ def get_latest_tag_over_all_time():
 
 def main_menu(result):
     distance = 20
-    status = ["no", "en", "player", "1 (for ex. A1 E1)", "1111222334", "harpooner"]
+    #         random lang   turn  set_ship  method      bot
+    status = ["no", result[6], "player", "1", "1111222334", "harpooner"]
     while True:
         print("-"*distance, l.msg("Sea Battle"), "-"*distance)
-        print("\t", l.msg("1) New Game"))
-        print("\t", l.msg("2) Settings"))
-        print("\t", l.msg("3) Quit"))
+        print(f"\t1) {l.msg("New Game")}")
+        print(f"\t2) {l.msg("Settings")}")
+        print(f"\t3) {l.msg("Quit")}")
 
         print()
         print(l.msg("Select an Item"))
@@ -49,18 +50,18 @@ def main_menu(result):
             normal_start(result)
         elif choice == "2":
             while True:
-                print("-"*distance, "Settings", "-"*distance)
-                print(f"\tSetting\t\t\t\tStatus")
-                print(f"\t1) Start Game\t\t\tYES")
-                print(f"\t2) Random Placement Ships\t{status[0]}")
-                print(f"\t3) Game Language\t\t{status[1]}")
-                print(f"\t4) 1st Player\t\t\t{status[2]}")
-                print(f"\t5) Ship Placement Type\t\t{status[3]}")
-                print(f"\t6) Method to Place Ships\t{status[4]}")
-                print(f"\t7) Bot Name\t\t\t{status[5]}")
-                print(f"\t8) Exit\t\t\t\tNO")
+                print("-"*distance, f"{l.msg("Settings")}", "-"*distance)
+                print(f"\t{l.msg("Setting")}\t\t\t\t{l.msg("Status")}")
+                print(f"\t1) {l.msg("Start Game")}\t\t\t{l.msg("YES")}")
+                print(f"\t2) {l.msg("Random Placement Ships")}\t{l.msg(status[0])}")
+                print(f"\t3) {l.msg("Game Language")}\t\t{l.msg(status[1])}")
+                print(f"\t4) {l.msg("1st Player")}\t\t\t{l.msg(status[2])}")
+                print(f"\t5) {l.msg("Ship Placement Type")}\t\t{status[3]} ({l.msg("for ex.")} {"A1 E1" if status[3] == "1" else "A1 > 5"})")
+                print(f"\t6) {l.msg("Method to Place Ships")}\t{l.msg(status[4])}")
+                print(f"\t7) {l.msg("Bot Name")}\t\t\t{l.msg(status[5])}")
+                print(f"\t8) {l.msg("Exit")}\t\t\t\t{l.msg("NO")}")
 
-                print("Which option do you want to change?")
+                print(l.msg("Which option do you want to change?"))
                 while True:
                     choice = input("> ")
                     if choice not in list(map(str, range(1, 9))):
@@ -74,69 +75,76 @@ def main_menu(result):
                     result[4] = False if status[0] == "no" else True # random
                     result[6] = status[1]
                     result[7] = status[2]
-                    result[8] = status[3][0]
+                    result[8] = status[3]
                     result[9] = status[5]
                     result[10] = status[4]
                     normal_start(result)
-                    status = ["no", "en", "player", "1 (for ex. A1 JI)", "1111222334", "harpooner"]
+                    status = ["no", "en", "player", "1 (for ex. A1 EI)", "1111222334", "harpooner"]
                     break
                 elif choice == "2":
                     while True:
-                        choice = input("What do you want to exchange it for? [yes/no] ")
-                        if choice not in ["no", "yes"]:
-                            print("Incorrect input")
+                        choice = input(f"{l.msg("What do you want to exchange it for?")} [{l.msg("yes")}/{l.msg("no")}] ")
+                        if choice not in ["no", "yes", "да", "нет"]:
+                            print(l.msg("Incorrect input"))
                         else: 
                             break
-                    status[0] = choice
+                    status[0] = ["no", "yes"][["нет", "да"].index(choice)] if choice not in ["no", "yes"] else choice
                 elif choice == "3":
                     while True:
-                        choice = input("What do you want to exchange it for? [ru/en] ")
-                        if choice not in ["ru", "en"]:
-                            print("Incorrect input")
+                        choice = input(f"{l.msg("What do you want to exchange it for?")} [{l.msg("ru")}/{l.msg("en")}] ")
+                        if choice not in ["ru", "en", "ру", "англ"]:
+                            print(l.msg("Incorrect input"))
                         else: 
                             break
-                    status[1] = choice
+                    status[1] = ["ru", "en"][["русс", "англ"].index(choice)] if choice not in ["ru", "en"] else choice
+                    l.LANGUAGE = choice
                 elif choice == "4":
                     while True:
-                        choice = input("What do you want to exchange it for? [player/bot] ")
-                        if choice not in ["player", "bot"]:
-                            print("Incorrect input")
+                        choice = input(f"{l.msg("What do you want to exchange it for?")} [{l.msg("player")}/{l.msg("bot")}] ")
+                        if choice not in ["player", "bot", "игрок", "бот"]:
+                            print(l.msg("Incorrect input"))
                         else: 
                             break
-                    status[2] = choice
+                    status[2] = ["player", "bot"][["игрок", "бот"].index(choice)] if choice not in ["player", "bot"] else choice
                 elif choice == "5":
                     while True:
-                        choice = input("What do you want to exchange it for? [1/2] (1: A1 E1, 2: A1 > 5 / A1 r 5) ")
+                        choice = input(f"{l.msg("What do you want to exchange it for?")} [1/2] (1: A1 E1, 2: A1 > 5) ")
                         if choice == "1":
-                            status[3] = choice + " (for ex. A1 E1)"
+                            status[3] = choice
                             break
                         elif choice == "2":
-                            status[3] = choice + " (for ex. A1 >/r 5)"
+                            status[3] = choice
                             break
                         else:
-                            print("Incorrect input")
+                            print(l.msg("Incorrect input"))
                 elif choice == "6":
                     while True:
-                        choice = input("What do you want to exchange it for? ")
+                        choice = input(f"{l.msg("What do you want to exchange it for?")} ")
                         if not choice.isdigit():
-                            print("Incorrect input")
+                            print(l.msg("Incorrect input"))
                         else: 
                             break
                     status[4] = choice
                 elif choice == "7":
                     while True:
-                        choice = input("What do you want to exchange it for? [greenhorn/harpooner/navigator/admiral/master_seawolf] ")
-                        if choice not in ["greenhorn", "harpooner", "navigator", "admiral", "master_seawolf"]:
-                            print("Incorrect input")
+                        choice = input(f"{l.msg("What do you want to exchange it for?")} " +
+                                       f"[{l.msg("greenhorn")}/{l.msg("harpooner")}/{l.msg("navigator")}/{l.msg("admiral")}/{l.msg("master_seawolf")}] ")
+                        if choice not in ["greenhorn", "harpooner", "navigator", "admiral", "master_seawolf",
+                                          "юнга", "гарпунер", "штурман", "адмирал", "мастер_морской_волк"]:
+                            print(l.msg("Incorrect input"))
                         else: 
                             break
-                    status[5] = choice
+                    status[5] = ["greenhorn", "harpooner", "navigator", "admiral",
+                                 "master_seawolf"][["юнга", "гарпунер", "штурман", "адмирал",
+                                                    "мастер_морской_волк"].index(choice)] if choice not in ["greenhorn",
+                                                                                                            "harpooner", "navigator",
+                                                                                                            "admiral", "master_seawolf"] else choice
                 elif choice == "8":
-                    print("Exit")
+                    print(l.msg("Exit"))
                     break
             
         else:
-            print("Quit")
+            print(l.msg("Quit"))
             break
 
 def fast_start(result):
@@ -204,14 +212,15 @@ def parse():
 if __name__ == "__main__":
     result = parse()
 
+    l.LANGUAGE = result[6] # --language
+    if result[3]: os.system("clear") # --clear
+
     if result[-1]: # menu
         main_menu(result)
     else:
         debug.DEBUG = result[5] # --debug
-        l.LANGUAGE = result[6] # --language
         # print(result)
 
-        if result[3]: os.system("clear")
 
         if result[0] and result[1]: # --help --vesion
             help_cmd()
