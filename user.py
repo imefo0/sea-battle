@@ -42,7 +42,7 @@ def add_game(user: str, game: list[list[int]], win: bool) -> bool: # [ [0,0], [1
     data["games"].append(new_game)
     
     with open(path, "w") as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=1)
 
     return True
 
@@ -80,12 +80,12 @@ def delete_all_games(user: str) -> bool:
     data["games"] = []  # ← очищаем список
     
     with open(path, "w") as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=1)
     
     return True
 
-def get_ship_placements(user: str):
-    path = f"users/{user}.json"
+def get_player_shots(user: str):
+    path = f"{USERS_DIR}/{user}.json"
     if not os.path.exists(path):
         return
     
@@ -93,7 +93,8 @@ def get_ship_placements(user: str):
         data = json.load(f)
     
     for game in data.get("games", []):
-        yield game.get("ships", [])  # или "shots"
+        for shot in game.get("shots", []):  # ← "shots", а не "ships"
+            yield shot  # [x, y]
 
 if __name__ == "__main__":
     cmd = sys.argv[1:]

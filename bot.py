@@ -1,4 +1,5 @@
 import random, time, os
+import user
 # import main
 
 # 0 - скрытый корабль 🌊, 
@@ -8,18 +9,8 @@ import random, time, os
 # 4 - попал 💥
 # 5 - убит ❌️
 
-heat_map = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
+heat_map = [[0]*10 for _ in range(10)]
+
 
 # searching - поиск через рандом
 # attack - атака
@@ -432,10 +423,18 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
             if 0 in i: res = False
         if res:
             return False
-        heat_map = [[0]*10 for _ in range(10)]
+        history_map = [[0]*10 for _ in range(10)]
+        admiral_map = [[0]*10 for _ in range(10)]
 
         for x, y in user.get_player_shots(name):
-            heat_map[y][x] += 1  # увеличиваем счётчик
+            history_map[y][x] += 1  # увеличиваем счётчик
+
+        # for i in range(len(heat_map)):
+        #     for j in heat_map[i]:
+        #         print(f"{j}", end="\t")
+        #     print()
+
+        # time.sleep(5)
 
         for len_ship in [2, 3, 4]:
             for dx, dy in [(1, 0), (0, 1)]:
@@ -453,8 +452,12 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
                         if status:
                             for i in range(0, len_ship):
                                 if field[y + dy * i][x + dx * i] != 4:
-                                    heat_map[y + dy * i][x + dx * i] += 1
+                                    admiral_map[y + dy * i][x + dx * i] += 1
         
+        for y in range(10):
+            for x in range(10):
+                heat_map[y][x] = history_map[y][x] + admiral_map[y][x]
+
         max_val = max(max(row) for row in heat_map)
         pos = []
 
@@ -462,6 +465,10 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
             for x in range(0, 10):
                 if heat_map[y][x] == max_val:
                     pos.append([x, y])
+
+        if not pos:
+            print("ОШИБКА: pos пуст!")
+            return False
 
         point = random.randint(0, len(pos) - 1)
         x, y = pos[point]
@@ -493,27 +500,41 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
 # В играх сложность ботов обычно строится как «слоеный пирог»:
 # каждый следующий уровень включает в себя фишки предыдущего.
 
+def get_all_cells_from_ships(ships):
+    cells = []
+    for ship in ships:
+        # ship[:-1] — отбрасываем последний элемент (HP)
+        for part in ship[:-1]:
+            x, y = part[0], part[1]
+            cells.append([x, y])
+    return cells
+
 if __name__ == "__main__":
     import main
     ships = []
 
-    main.set_ship1([1,1], [1,1], main.field, ships, 0, 1)
-    main.set_ship1([3,2], [5,2], main.field, ships, 0, 3)
-    main.set_ship1([7,2], [8,2], main.field, ships, 0, 2)
-    main.set_ship1([1,3], [1,4], main.field, ships, 0, 2)
-    main.set_ship1([3,4], [6,4], main.field, ships, 0, 4)
+    # main.set_ship1([1,1], [1,1], main.field, ships, 0, 1)
+    # main.set_ship1([3,2], [5,2], main.field, ships, 0, 3)
+    # main.set_ship1([7,2], [8,2], main.field, ships, 0, 2)
+    # main.set_ship1([1,3], [1,4], main.field, ships, 0, 2)
+    # main.set_ship1([3,4], [6,4], main.field, ships, 0, 4)
 
-    main.set_ship1([8,4], [8,5], main.field, ships, 0, 2)
-    main.set_ship1([1,6], [3,6], main.field, ships, 0, 3)
-    main.set_ship1([5,6], [5,6], main.field, ships, 0, 1)
-    main.set_ship1([7,7], [7,7], main.field, ships, 0, 1)
-    main.set_ship1([4,8], [4,8], main.field, ships, 0, 1)
+    # main.set_ship1([8,4], [8,5], main.field, ships, 0, 2)
+    # main.set_ship1([1,6], [3,6], main.field, ships, 0, 3)
+    # main.set_ship1([5,6], [5,6], main.field, ships, 0, 1)
+    # main.set_ship1([7,7], [7,7], main.field, ships, 0, 1)
+    # main.set_ship1([4,8], [4,8], main.field, ships, 0, 1)
+
+    set_ships(main.field, ships, "1111222334")
+
+    user.info("imefo", -1)
+    time.sleep(0.5)
 
     os.system("clear")
     num = 1
 
     while True:
-        status = admiral(main.field, ships)
+        status = harpooner(main.field, ships,)
         n = 0
         for i in range(len(main.field)):
             for j in range(len(main.field[i])):
@@ -524,13 +545,14 @@ if __name__ == "__main__":
             print(f"|{int(n/2)*"#"}{(50 - int(n/2))*" "}| {n}% {n}/100")
             main.print_field(main.field, main.field)
             # input()
-            time.sleep(0.1)
+            time.sleep(0.05)
             os.system("clear")
             num += 1
         else:
             print(f"адмирал победил за ходов: {num}!")
             print(f"|{int(n/2)*"#"}{(50 - int(n/2))*" "}| {n}% {n}/100")
             main.print_field(main.field, main.field)
+            user.add_game("imefo", get_all_cells_from_ships(ships), False)
             break
 
 # if __name__ == "__main__":
