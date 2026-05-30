@@ -425,25 +425,18 @@ def admiral(field, ships): # адмирал, тепловая карта
             continue
     return True
 
-def master_seawolf(field, ships): # мастер Морской волк, карта + история
+def master_seawolf(field, ships, name): # мастер Морской волк, карта + история
     while True:
         res = True
         for i in field:
             if 0 in i: res = False
         if res:
             return False
-        heat_map = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]   
+        heat_map = [[0]*10 for _ in range(10)]
+
+        for x, y in user.get_player_shots(name):
+            heat_map[y][x] += 1  # увеличиваем счётчик
+
         for len_ship in [2, 3, 4]:
             for dx, dy in [(1, 0), (0, 1)]:
                 for y in range(0, 10):
