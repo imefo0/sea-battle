@@ -84,6 +84,17 @@ def delete_all_games(user: str) -> bool:
     
     return True
 
+def get_ship_placements(user: str):
+    path = f"users/{user}.json"
+    if not os.path.exists(path):
+        return
+    
+    with open(path, "r") as f:
+        data = json.load(f)
+    
+    for game in data.get("games", []):
+        yield game.get("ships", [])  # или "shots"
+
 if __name__ == "__main__":
     cmd = sys.argv[1:]
     if "-c" in cmd:
