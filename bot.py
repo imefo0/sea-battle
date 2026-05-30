@@ -26,6 +26,7 @@ heat_map = [
 # attack - атака
 harpooner_mode = "searching"
 navigator_mode = "searching"
+evil_admiral_mode = "searching"
 
 navigator_map = []
 
@@ -33,6 +34,7 @@ directions = [
     (1, 0), (-1, 0),
     (0, 1), (0, -1)
 ]
+
 for a in [
     [(0, 1), (0, 5), (0, 9), (4, 9), (8, 9)],
     [(0, 3), (0, 7), (2, 9), (6, 9)]
@@ -145,7 +147,7 @@ def set_ships(field: list[list[int]], ships, placement_method: list[str]) -> boo
 
 def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navigator
     log("attack_mode")
-    global directions, harpooner_mode, navigator_mode, x, y
+    global directions, harpooner_mode, navigator_mode, evil_admiral_mode, x, y
     # import pdb; pdb.set_trace()
     while True:
         if x - 1 < 0 and (-1, 0) in directions: directions.remove((-1, 0))
@@ -197,6 +199,8 @@ def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navig
                     harpooner_mode = "searching"
                 elif bot == "navigator":
                     navigator_mode = "searching"
+                elif bot == "evil_admiral":
+                    evil_admiral_mode = "searching"
             return ["continue", True]
 
         # если мимо
@@ -419,6 +423,7 @@ def admiral(field, ships): # адмирал, тепловая карта
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]   
         log("бот считает клетки")
+        # генерация тепловой карты
         for len_ship in [2, 3, 4]:
             for dx, dy in [(1, 0), (0, 1)]:
                 for y in range(0, 10):
@@ -437,6 +442,7 @@ def admiral(field, ships): # адмирал, тепловая карта
                                 if field[y + dy * i][x + dx * i] != 4:
                                     heat_map[y + dy * i][x + dx * i] += 1
         
+        # поиск максимального значения
         max_val = max(max(row) for row in heat_map)
         pos = []
 
@@ -445,6 +451,7 @@ def admiral(field, ships): # адмирал, тепловая карта
                 if heat_map[y][x] == max_val:
                     pos.append([x, y])
 
+        # выбор координаты
         point = random.randint(0, len(pos) - 1)
         x, y = pos[point]
 
@@ -479,6 +486,96 @@ def admiral(field, ships): # адмирал, тепловая карта
             continue
     return True
 
+def evil_admiral(field, ships):
+    global directions, evil_admiral_mode, x, y
+    while True:
+        res = True
+        for i in field:
+            if 0 in i: res = False
+        if res:
+            return False
+        heat_map = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]   
+        if evil_admiral_mode == "searching":
+            for len_ship in [2, 3, 4]:
+                for dx, dy in [(1, 0), (0, 1)]:
+                    for y in range(0, 10):
+                        for x in range(0, 10):
+                            status = True
+                            for i in range(0, len_ship):
+                                nx, ny = x + dx*i, y + dy*i
+                                if not (0 <= nx < 10 and 0 <= ny < 10):
+                                    status = False
+                                    break
+                                if field[ny][nx] not in (0, 2, 4):
+                                    status = False
+                                    break
+                            if status:
+                                for i in range(0, len_ship):
+                                    if field[y + dy * i][x + dx * i] != 4:
+                                        heat_map[y + dy * i][x + dx * i] += 1
+            
+            max_val = max(max(row) for row in heat_map)
+            pos = []
+
+            for y in range(0, 10):
+                for x in range(0, 10):
+                    if heat_map[y][x] == max_val:
+                        pos.append([x, y])
+
+            point = random.randint(0, len(pos) - 1)
+            x, y = pos[point]
+
+            if field[y][x] == 0:
+                field[y][x] = 4
+
+                # изменение в списке кораблей
+                ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
+                ships[ship_idx][part_idx][2] = False
+                ships[ship_idx][-1] -= 1
+
+                # если убили корабль
+                if ships[ship_idx][-1] == 0:
+                    for i in range(len(ships[ship_idx]) - 1):
+                        ship = ships[ship_idx][i]
+                        heat_map[ship[1]][ship[0]] = 0
+                    clear_ship(field, ships, ship_idx)
+                    directions = [
+                        (1, 0), (-1, 0), (0, 1), (0, -1)
+                    ]
+                    evil_admiral_mode = "searching"
+                    x, y = None, None
+                    continue
+
+                evil_admiral_mode = "attack"
+                continue
+
+            elif field[y][x] == 2:
+                field[y][x] = 3
+                heat_map[y][x] = 0
+                break
+            else: 
+                del pos[point]
+                continue
+        elif evil_admiral_mode == "attack":
+            result = attack_mode(field, ships, "evil_admiral")
+            if result[1]:
+                if result[0] == "continue":
+                    continue
+                elif result[0] == "break":
+                    break
+    return True
+
 def master_seawolf(field): # мастер Морской волк, карта + история
     log("master_seawolf")
     pass
@@ -506,14 +603,14 @@ if __name__ == "__main__":
     num = 1
 
     while True:
-        status = admiral(main.field, ships)
+        status = evil_admiral(main.field, ships)
         n = 0
         for i in range(len(main.field)):
             for j in range(len(main.field[i])):
                 if main.field[i][j] in [1, 3, 4, 5]:
                     n += 1
         if status:
-            print(f"адмирал делает ход {num}...")
+            print(f"злой адмирал делает ход {num}...")
             print(f"|{int(n/2)*"#"}{(50 - int(n/2))*" "}| {n}% {n}/100")
             main.print_field(main.field, main.field)
             # input()
@@ -521,7 +618,7 @@ if __name__ == "__main__":
             os.system("clear")
             num += 1
         else:
-            print(f"адмирал победил за ходов: {num}!")
+            print(f"злой адмирал победил за ходов: {num}!")
             print(f"|{int(n/2)*"#"}{(50 - int(n/2))*" "}| {n}% {n}/100")
             main.print_field(main.field, main.field)
             break
