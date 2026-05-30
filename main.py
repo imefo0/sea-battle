@@ -20,6 +20,9 @@ bot_ships = []
 # поле где бот атакует
 bot_radar = [[2 for _ in range(10)] for _ in range(10)]
 
+en_words_to_parse = list("abcdefghij")
+ru_words_to_parse = list("абвгдежзик")
+
 # само поле из скрытых пустышек
 field = [
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -68,6 +71,33 @@ def add_part_of_ship(ships: list, ship_idx: int, part: list):
     ships[ship_idx].insert(-1, part)
     ships[ship_idx][-1] += 1
     return True
+
+def parse(command: str, set_ship: str):
+    if set_ship == "1": # "A1 J4"
+        cmds = command.lower().split(" ") # ["a1" "j4"]
+        result = []
+        for x in cmds:
+            cmds[cmds.index(x)] = [cmds[cmds.index(x)][0], cmds[cmds.index(x)][1:]]
+            # [["a", "1"], ["j", "4"]]
+        for i in cmds: # ["a", "1"] ["j", "4"]
+            result.append([])
+            for j in i: # a 1 j 4
+                if j.isdigit():
+                    result[-1].append(int(j) - 1)
+                else:
+                    if j in ru_words_to_parse: result[-1].append(ru_words_to_parse.index(j))
+                    elif j in en_words_to_parse: result[-1].append(en_words_to_parse.index(j))
+        return result
+    elif set_ship == "2": # "A1 > 5"
+        cmds = command.split(" ") # ["A1", ">", "5"]
+        cmds[0] = cmds[0].lower() # ["a1", ">", "5"]
+        cmds[0] = [cmds[0][0], int(cmds[0][1:])]
+        if cmds[0][0] in ru_words_to_parse: cmds[0][0] = ru_words_to_parse.index(cmds[0][0])
+        elif cmds[0][0] in en_words_to_parse: cmds[0][0] = en_words_to_parse.index(cmds[0][0])
+        cmds[-1] = int(cmds[-1])
+        cmds[0][1] = int(cmds[0][1]) - 1
+        return cmds # [[0, 0], ">", 5]
+    
 
 # печатаем поле
 def print_field(field1, field2=[-1]):
@@ -284,20 +314,22 @@ def start(turn, set_ship, bot_name, placement_method):
                 print_field(player_field, player_radar)
                 if set_ship == "1":
                     while True:
-                        raw_cell1, raw_cell2 = input().split(" ")
-                        cell1 = [int(i) for i in raw_cell1.split(",")]
-                        cell2 = [int(i) for i in raw_cell2.split(",")]
+                        cmd = parse(input(), "1")
+                        # raw_cell1, raw_cell2 = input().split(" ")
+                        # cell1 = [int(i) for i in raw_cell1.split(",")]
+                        # cell2 = [int(i) for i in raw_cell2.split(",")]
 
-                        if set_ship1(cell1, cell2, player_field, player_ships, 1, int(i)): break
-                        else: print(msg("incorrect input"))
+                        if set_ship1(*cmd, player_field, player_ships, 1, int(i)): break
+                        else: print("incorrect input")
 
                 elif set_ship == "2":
                     while True:
-                        raw_cell, dir, num = input().split(" ")
-                        cell = [int(i) for i in raw_cell.split(",")]
+                        cmd = parse(input(), "2")
+                        # raw_cell, dir, num = input().split(" ")
+                        # cell = [int(i) for i in raw_cell.split(",")]
 
-                        if set_ship2(cell, dir, int(num), player_field, player_ships, 1, int(i)): break
-                        else: print(msg("iccorect input"))
+                        if set_ship2(*cmd, player_field, player_ships, 1, int(i)): break
+                        else: print("iccorect input")
 
                 else:
                     print(msg("incorrect set-ship value"))
