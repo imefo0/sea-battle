@@ -1,4 +1,5 @@
 import random, time, os
+from debug import DEBUG, log
 # import main
 
 # 0 - скрытый корабль 🌊, 
@@ -28,7 +29,6 @@ navigator_mode = "searching"
 
 navigator_map = []
 
-
 directions = [
     (1, 0), (-1, 0),
     (0, 1), (0, -1)
@@ -48,16 +48,19 @@ for a in [
 
 
 def find_ship_by_cell(ships, cell):
+    log("find_ship_by_cell")
     x, y = list(cell)
     for ship_idx, ship in enumerate(ships):
         for part_idx, part in enumerate(ship[:-1]):
             if part[0] == x and part[1] == y:
                 return ship_idx, part_idx
+    log(f"ОШИБКА: корабль не найден, cell = {cell}")
     return None, None
 
 def clear_ship(field, ships, ship_idx):
+    log("clear_ship")
     ship = ships[ship_idx]
-    if ships[ship_idx][-1] == 0:
+    if ship[-1] == 0:
         for part in ship:
             if isinstance(part, list):
                 x, y, _ = part
@@ -66,10 +69,13 @@ def clear_ship(field, ships, ship_idx):
                     if 0 <= y + dy <= 9 and 0 <= x + dx <= 9:
                         if field[y + dy][x + dx] == 2: 
                             field[y + dy][x + dx] = 3
-    else: return False
+    else:
+        log(f"ОШИБКА: этот корабль не убит, hp = {ships[ship_idx][-1]}")
+        return False
     return True
 
 def set_ships(field: list[list[int]], ships, placement_method: list[str]) -> bool:
+    log(f"set_ships, method = {placement_method}")
     list_of_methods = list(map(int, placement_method))
     attempts = 0
     for num in list_of_methods:
@@ -129,13 +135,16 @@ def set_ships(field: list[list[int]], ships, placement_method: list[str]) -> boo
                 
                 break
             if attempts > 1000:
+                log(f"перестановка, попыток: {attempts}")
                 field = [[2 for _ in range(10)] for _ in range(10)]
                 attempts = 0
             else:
+                log("бот поставил корабль")
                 break
     return True
 
 def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navigator
+    log("attack_mode")
     global directions, harpooner_mode, navigator_mode, x, y
     # import pdb; pdb.set_trace()
     while True:
@@ -146,9 +155,11 @@ def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navig
 
         # выборка направления
         dx, dy = random.choice(directions) 
+        log(f"dx = {dx}, dy = {dy}, directions = {directions}")
 
         # если попал
         if field[y + dy][x + dx] == 0:
+            log("бот попал")
             field[y + dy][x + dx] = 4
             x, y = x + dx, y + dy
 
@@ -156,6 +167,7 @@ def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navig
             ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
             ships[ship_idx][part_idx][2] = False
             ships[ship_idx][-1] -= 1
+            log(f"hp = {ships[ship_idx][-1]}")
 
             # удаляем перпендикулярные направления
             if dx != 0:
@@ -163,18 +175,24 @@ def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navig
                     directions.remove((0, 1))
                 if (0, -1) in directions: 
                     directions.remove((0, -1))
-            if dy != 0:
+                log("бот убирает перпендикулярные координаты")
+            elif dy != 0:
                 if (1, 0) in directions:
                     directions.remove((1, 0))
                 if (-1, 0) in directions: 
                     directions.remove((-1, 0))
+                    log("бот убирает перпендикулярные координаты")
+
+            log(f"directions = {directions}")
 
             # если убит
             if ships[ship_idx][-1] == 0:
+                log("бот убил")
                 clear_ship(field, ships, ship_idx)
                 directions = [
                     (1, 0), (-1, 0), (0, 1), (0, -1)
                 ]
+                log(f"derections = {directions}")
                 if bot == "harpooner":
                     harpooner_mode = "searching"
                 elif bot == "navigator":
@@ -183,6 +201,7 @@ def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navig
 
         # если мимо
         elif field[y + dy][x + dx] == 2:
+            log("бот промахнулся")
             field[y + dy][x + dx] = 3
             # если дошли до края корабля но не убили его
             if len(directions) == 1:
@@ -194,17 +213,21 @@ def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navig
 
         # если уже стреляли по кораблю (то "ходим" по нему)
         elif field[y + dy][x + dx] == 4:
+            log('бот "ходит" по кораблю')
             x, y = x + dx, y + dy
             return ["continue", True]
 
         elif field[y + dy][x + dx] in [1, 3, 5] and \
             (harpooner_mode == "attack" or navigator_mode == "attack"):
+            log("ОШИБКА: бот стреляет в выстреленную клетку")
             directions.remove((dx, dy))
+            log(f"directions = {directions}")
             return ["continue", True]
 
         return ["break", True]
 
 def greenhorn(field, ships): # юнга, рандом
+    log("greenhorn")
     while True:
         res = True
         for i in field:
@@ -213,28 +236,34 @@ def greenhorn(field, ships): # юнга, рандом
             return False
         # пытаемся стрельнуть в рандомную координату
         x, y = [random.randint(0, 9), random.randint(0, 9)]
+        log(f"x = {x}, y = {y}")
 
         # если попали
         if field[y][x] == 0:
+            log("бот попал")
             field[y][x] = 4
     
             # изменение в списке кораблей
             ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
             ships[ship_idx][part_idx][2] = False
             ships[ship_idx][-1] -= 1
+            log(f"hp = {ships[ship_idx][-1]}")
 
             # если убили корабль
             if ships[ship_idx][-1] == 0:
+                log("бот убил")
                 if not clear_ship(field, ships, ship_idx): return False
 
         # если промахнулись
         elif field[y][x] == 2:
+            log("бот промахнулся")
             field[y][x] = 3
             break
 
     return True
 
 def harpooner(field, ships): # гаупунер, охотник
+    log("harpooner")
     global directions, harpooner_mode, x, y
 
     while True:
@@ -247,20 +276,25 @@ def harpooner(field, ships): # гаупунер, охотник
 
         # режим поиска
         if harpooner_mode == "searching":
+            log("поиск корабля")
 
             x, y = [random.randint(0, 9), random.randint(0, 9)]
-            
+            log(f"x = {x}, y = {y}")
+
             # если попали
             if field[y][x] == 0:
+                log("бот попал")
                 field[y][x] = 4
 
                 # измененить список кораблей
                 ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
                 ships[ship_idx][part_idx][2] = False
                 ships[ship_idx][-1] -= 1
+                log(f"hp = {ships[ship_idx][-1]}")
                 
                 # если убили
                 if ships[ship_idx][-1] == 0:
+                    log("бот убил корабль")
                     clear_ship(field, ships, ship_idx)
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
@@ -276,6 +310,7 @@ def harpooner(field, ships): # гаупунер, охотник
 
             # если мимо
             elif field[y][x] == 2:
+                log("бот промахнулся")
                 field[y][x] = 3
                 directions = [
                 (0, 1), (1, 0), (0, -1), (-1, 0)
@@ -283,6 +318,7 @@ def harpooner(field, ships): # гаупунер, охотник
                 break
     
         elif harpooner_mode == "attack":
+            log("бот уже нашел корабль и атакует")
             result = attack_mode(field, ships, "harpooner")
             if result[1]:
                 if result[0] == "continue":
@@ -292,6 +328,7 @@ def harpooner(field, ships): # гаупунер, охотник
     return True
 
 def navigator(field, ships): # штурман, шахматный
+    log("navigator")
     global directions, navigator_mode, x, y
 
     while True:
@@ -304,6 +341,7 @@ def navigator(field, ships): # штурман, шахматный
 
         # режим поиска
         if navigator_mode == "searching":
+            log("бот ищет корабль")
             if [] in navigator_map:
                 navigator_map.remove([])
             if navigator_map == []:
@@ -311,18 +349,23 @@ def navigator(field, ships): # штурман, шахматный
             if navigator_map != [] and [] not in navigator_map:
                 x, y = random.choice(navigator_map[0])
                 navigator_map[0].remove((x, y))
-            
+            log(f"x = {x}, y = {y} ({"по шаблону" if navigator_map != [] and \
+                                    [] not in navigator_map else "случайно"})")
+
             # если попали
             if field[y][x] == 0:
+                log("бот попал")
                 field[y][x] = 4
 
                 # измененить список кораблей
                 ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
                 ships[ship_idx][part_idx][2] = False
                 ships[ship_idx][-1] -= 1
-                
+                log(f"hp = {ships[ship_idx][-1]}")
+
                 # если убили
                 if ships[ship_idx][-1] == 0:
+                    log("бот убил")
                     clear_ship(field, ships, ship_idx)
                     directions = [
                         (1, 0), (-1, 0), (0, 1), (0, -1)
@@ -338,6 +381,7 @@ def navigator(field, ships): # штурман, шахматный
 
             # если мимо
             elif field[y][x] == 2:
+                log("бот промахнулся")
                 field[y][x] = 3
                 directions = [
                 (0, 1), (1, 0), (0, -1), (-1, 0)
@@ -345,6 +389,7 @@ def navigator(field, ships): # штурман, шахматный
                 break
         
         elif navigator_mode == "attack":
+            log("бот уже нашел корабль и идет атаковать")
             result = attack_mode(field, ships, "navigator")
             if result[1]:
                 if result[0] == "continue":
@@ -354,6 +399,7 @@ def navigator(field, ships): # штурман, шахматный
     return True
 
 def admiral(field, ships): # адмирал, тепловая карта
+    log("адмирал")
     while True:
         res = True
         for i in field:
@@ -372,6 +418,7 @@ def admiral(field, ships): # адмирал, тепловая карта
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]   
+        log("бот считает клетки")
         for len_ship in [2, 3, 4]:
             for dx, dy in [(1, 0), (0, 1)]:
                 for y in range(0, 10):
@@ -401,31 +448,39 @@ def admiral(field, ships): # адмирал, тепловая карта
         point = random.randint(0, len(pos) - 1)
         x, y = pos[point]
 
+        log(f"x = {x}, y = {y}")
+
         if field[y][x] == 0:
+            log("бот попал")
             field[y][x] = 4
 
             # изменение в списке кораблей
             ship_idx, part_idx = find_ship_by_cell(ships, [x, y])
             ships[ship_idx][part_idx][2] = False
             ships[ship_idx][-1] -= 1
+            log(f"hp = {ships[ship_idx][-1]}")
 
             # если убили корабль
             if ships[ship_idx][-1] == 0:
+                log("бот убил")
                 for i in range(len(ships[ship_idx]) - 1):
                     ship = ships[ship_idx][i]
                     heat_map[ship[1]][ship[0]] = 0
                 clear_ship(field, ships, ship_idx)
             continue
         elif field[y][x] == 2:
+            log("бот промахнулся")
             field[y][x] = 3
             heat_map[y][x] = 0
             break
         else: 
+            log("ОШИБКА: в эту клетку уже стреляли")
             del pos[point]
             continue
     return True
 
 def master_seawolf(field): # мастер Морской волк, карта + история
+    log("master_seawolf")
     pass
 
 # В играх сложность ботов обычно строится как «слоеный пирог»:
