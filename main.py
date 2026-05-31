@@ -373,7 +373,7 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
                 else:
                     log("попал")
                     # изменение в списке кораблей
-                    ship_idx, part_idx = bot.find_ship_by_cell(bot_ships, cell)
+                    ship_idx, part_idx = bot.find_ship_by_cell(bot_ships, cmd)
                     bot_ships[ship_idx][part_idx][2] = False
                     bot_ships[ship_idx][-1] -= 1
 
