@@ -477,7 +477,8 @@ def admiral(field, ships): # адмирал, тепловая карта
             continue
     return True
 
-def evil_admiral(field, ships):
+def evil_admiral(field, ships): # он пока будет в коде но не использоваться или замена адмирала но это будет злой
+    log("evil_admiral")
     global directions, evil_admiral_mode, x, y
     while True:
         res = True
@@ -498,6 +499,7 @@ def evil_admiral(field, ships):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]   
         if evil_admiral_mode == "searching":
+            log("режим поиска")
             for len_ship in [2, 3, 4]:
                 for dx, dy in [(1, 0), (0, 1)]:
                     for y in range(0, 10):
@@ -526,8 +528,10 @@ def evil_admiral(field, ships):
 
             point = random.randint(0, len(pos) - 1)
             x, y = pos[point]
+            log(f"point: {point}, pos: {pos}")
 
             if field[y][x] == 0:
+                log("попал")
                 field[y][x] = 4
 
                 # изменение в списке кораблей
@@ -537,6 +541,7 @@ def evil_admiral(field, ships):
 
                 # если убили корабль
                 if ships[ship_idx][-1] == 0:
+                    log("убил")
                     for i in range(len(ships[ship_idx]) - 1):
                         ship = ships[ship_idx][i]
                         heat_map[ship[1]][ship[0]] = 0
@@ -552,6 +557,7 @@ def evil_admiral(field, ships):
                 continue
 
             elif field[y][x] == 2:
+                log("мимо")
                 field[y][x] = 3
                 heat_map[y][x] = 0
                 break
@@ -577,7 +583,8 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
             return False
         history_map = [[0]*10 for _ in range(10)]
         admiral_map = [[0]*10 for _ in range(10)]
-
+        
+        log("сборка карты истории игрока")
         for x, y in user.get_player_shots(name):
             history_map[y][x] += 1  # увеличиваем счётчик
 
@@ -588,6 +595,7 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
 
         # time.sleep(5)
 
+        log("сборка карты адмирала")
         for len_ship in [2, 3, 4]:
             for dx, dy in [(1, 0), (0, 1)]:
                 for y in range(0, 10):
@@ -606,6 +614,7 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
                                 if field[y + dy * i][x + dx * i] != 4:
                                     admiral_map[y + dy * i][x + dx * i] += 1
         
+        log("сборка в единую карту")
         for y in range(10):
             for x in range(10):
                 heat_map[y][x] = history_map[y][x] + admiral_map[y][x]
@@ -619,13 +628,15 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
                     pos.append([x, y])
 
         if not pos:
-            print("ОШИБКА: pos пуст!")
+            log("ОШИБКА: pos пуст!")
             return False
 
         point = random.randint(0, len(pos) - 1)
         x, y = pos[point]
+        log(f"point: {point}, pos: {pos}")
 
         if field[y][x] == 0:
+            log("попал")
             field[y][x] = 4
 
             # изменение в списке кораблей
@@ -635,12 +646,14 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
 
             # если убили корабль
             if ships[ship_idx][-1] == 0:
+                log("убил")
                 for i in range(len(ships[ship_idx]) - 1):
                     ship = ships[ship_idx][i]
                     heat_map[ship[1]][ship[0]] = 0
                 clear_ship(field, ships, ship_idx)
             continue
         elif field[y][x] == 2:
+            log("мимо")
             field[y][x] = 3
             heat_map[y][x] = 0
             break
