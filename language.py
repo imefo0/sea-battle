@@ -37,6 +37,8 @@ TEXTS = {
         "without user": "без пользователя",
         "False": "Нет",
         "True": "Да",
+        "create user": "создать пользователя",
+        "remove user": "удалить пользоватетля",
 
         "Sea Battle": "Морской Бой",
         "New Game": "Новая Игра",
@@ -106,6 +108,7 @@ TEXTS = {
         "method to place ships": "method to place ships\t\t",
         "select user to play": "select user to play\t\t",
         "without user": "without user",
+        "create user": "create user\t"
     }
 }
 

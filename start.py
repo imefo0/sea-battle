@@ -184,6 +184,8 @@ def help_cmd():
     print(f"-b\t--bot\t\t{l.msg("type of bot")}harpooner")
     print(f"-m\t--method\t{l.msg("method to place ships")}1111222334")
     print(f"-u\t--user\t\t{l.msg("select user to play")}-1 ({l.msg("without user")})")
+    print(f"-n\t--new-user\t{l.msg("create user")}\t\t{l.msg("False")}")
+    print(f"-R\t--remove-user\t{l.msg("removing user")}\t\t\t{l.msg("False")}")
 
 def version():
     print(f"Sea Battle\tActual: {get_latest_tag_master()}\n\t\tNewest: {get_latest_tag_over_all_time()}")
@@ -218,14 +220,14 @@ def parse():
     method = get_arg('-m', '--method', '1111222334')
     name = get_arg('-u', '--user', -1)
     new = get_arg('-n', '--new-user', -1)
-    delete = get_arg('-d', '--delete-user', -1)
+    remove = get_arg('-R', '--remove-user', -1)
 
     menu = not any([help, version, fast, random, debug, flag_in_cmd("-t", "--turn", c),
                     flag_in_cmd("-s", "--set-ship", c), flag_in_cmd("-b", "--bot", c),
                     flag_in_cmd("-m", "--method", c), flag_in_cmd("-u", "--user", c), 
-                    flag_in_cmd("-n", "--new-user", c), flag_in_cmd("-d", "--delete-user", c)])
+                    flag_in_cmd("-n", "--new-user", c), flag_in_cmd("-R", "--remove-user", c)])
 
-    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, name, new, delete, menu]
+    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, name, new, remove, menu]
 
 if __name__ == "__main__":
     result = parse()
@@ -247,7 +249,7 @@ if __name__ == "__main__":
         elif result[0]: help_cmd(); exit(0) # --help
         elif result[1]: version(); exit(0) # --version
 
-        if result[13] != -1: # --delete-user
+        if result[13] != -1: # --remove-user
             user.remove_user(result[13])
 
         if result[12] != -1: # --new-user
