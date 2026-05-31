@@ -161,10 +161,10 @@ def main_menu(result):
             break
 
 def fast_start(result):
-    __import__('main').start(*result[7:-1])
+    __import__('main').start(*result[7:-3])
 
 def normal_start(result):
-    __import__('main').start(*result[7:-1])
+    __import__('main').start(*result[7:-3])
 
 def help_cmd():
     print(l.msg(f"Using: python3 start.py [-c] [-d] [-f] [-r] [-b BOT] [-t TURN] [-s MODE] [-m METHOD] [-l LANG]"))
