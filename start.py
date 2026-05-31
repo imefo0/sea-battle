@@ -253,8 +253,8 @@ if __name__ == "__main__":
         if result[12] != -1: # --new-user
             user.add_user(result[12])
 
-        if not user.exist_user(result[11]): # --user
-            print("this user does not exist")
+        if not user.exist_user(result[11]) and result[11] != -1: # --user
+            print(f"user {result[11]} does not exist")
 
         if result[4]: # --random
             print("random ship placement will be added after 1.0.0")
