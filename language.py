@@ -27,12 +27,16 @@ TEXTS = {
         "(automatic set -c -r -s 1 -m 1111222334 -b harpooner -t player)": "(автоматически -c -r -s 1 -m\n\t\t\t1111222334 -b harpooner -t\n\t\t\tplayer)",
         "clear console before the game": "очистить консоль перед игрой\t",
         "random placement ships": "рандомная постанока кораблей\t",
-        "special debug for developers": "специальная отладка для\t\tFalse\n\t\t\tразработчиков",
+        "special debug for developers": "специальная отладка для\t\tНет\n\t\t\tразработчиков",
         "game language [ru/en]": "язык игры [русс/англ]\t\t",
         "1st player": "1-ый игрок\t\t\t",
         "ship placement type": "вид постановки кораблей\t\t",
         "type of bot": "тип бота\t\t\t",
         "method to place ships": "способ постановки кораблей\t",
+        "select user to play": "выбрать пользователя для игры\t",
+        "without user": "без пользователя",
+        "False": "Нет",
+        "True": "Да",
 
         "Sea Battle": "Морской Бой",
         "New Game": "Новая Игра",
@@ -65,7 +69,8 @@ TEXTS = {
         "master_seawolf": "мастер_морской_волк",
         "Which option do you want to change?": "Какую настройку вы хотите изменить?",
         "for ex.": "например",
-        "What do you want to exchange it for?": "Что вы хотите изменить?"
+        "What do you want to exchange it for?": "Что вы хотите изменить?",
+        "User Name": "Имя Пользователя"
     },
     "en": {
         "player's turn to place ships": "player's turn to place ships",
@@ -98,7 +103,9 @@ TEXTS = {
         "1st player": "1st player\t\t\t",
         "ship placement type": "ships placement type\t\t",
         "type of bot": "type of bot\t\t\t",
-        "method to place ships": "method to place ships\t\t"
+        "method to place ships": "method to place ships\t\t",
+        "select user to play": "select user to play\t\t",
+        "without user": "without user",
     }
 }
 

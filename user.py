@@ -96,6 +96,12 @@ def get_player_shots(user: str):
         for shot in game.get("shots", []):  # ← "shots", а не "ships"
             yield shot  # [x, y]
 
+def exist_user(user: str) -> bool:
+    path = f"{USERS_DIR}/{user}.json"
+    if os.path.exists(path):
+        return True
+    return False
+
 if __name__ == "__main__":
     cmd = sys.argv[1:]
     if "-c" in cmd:

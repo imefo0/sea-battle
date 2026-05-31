@@ -5,6 +5,7 @@ import random
 import bot
 from debug import DEBUG, log
 from language import LANGUAGE, msg
+import user
 
 # поле для игрока
 player_field = [[2 for _ in range(10)] for _ in range(10)]
@@ -298,7 +299,7 @@ def update(field1, field2, method):
             else: return False
     return True
 
-def start(turn, set_ship, bot_name, placement_method):
+def start(turn, set_ship, bot_name, placement_method, name=-1):
     log(f"start, turn = {turn}, set_ship = {set_ship}, bot_name = {bot_name}, method = {placement_method}")
     # turn = input("select 1st turn (default player): ") or "player"
     # set_ship = input("select set_ship (default 1): ") or "1"
@@ -399,7 +400,7 @@ def start(turn, set_ship, bot_name, placement_method):
                 elif bot_name == "admiral":
                     if not bot.admiral(bot_radar, player_ships): who_win = "bot"
                 elif bot_name == "master_seawolf":
-                    print(msg("master_seawolf doesn't work now"))
+                    if not bot.master_seawolf(bot_radar, player_ships, name): who_win = "bot"
                 else:
                     print(msg("incorrect bot name"))
                 
@@ -419,9 +420,13 @@ def start(turn, set_ship, bot_name, placement_method):
     elif who_win == "bot":
         print(msg("bot won"))
         print_field(player_field, player_radar)
+        if name != -1:
+            user.add_game(name, bot.get_all_cells_from_ships(player_ships), False)
     elif who_win == "player":
         print(msg("player won"))
         print_field(player_field, player_radar)
+        if name != -1:
+            user.add_game(name, bot.get_all_cells_from_ships(player_ships), True)
     return True
 
 # ships = []
@@ -446,7 +451,7 @@ def start(turn, set_ship, bot_name, placement_method):
 # и столконовение кораблей
 
 if __name__ == "__main__":
-    start("player", "1", "harpooner", "1111222334")
+    start("player", "1", "harpooner", "1111222334", "imefo")
 #     ships = []
 #     while True:
 #         print_field(field)

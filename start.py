@@ -3,6 +3,7 @@ import os
 import subprocess
 import language as l
 import debug
+import user
 
 def get_latest_tag_master():
     try:
@@ -29,7 +30,7 @@ def get_latest_tag_over_all_time():
 def main_menu(result):
     distance = 20
     #         random lang   turn  set_ship  method      bot
-    status = ["no", result[6], "player", "1", "1111222334", "harpooner"]
+    status = ["no", result[6], "player", "1", "1111222334", "harpooner", -1]
     while True:
         print("-"*distance, l.msg("Sea Battle"), "-"*distance)
         print(f"\t1) {l.msg("New Game")}")
@@ -59,7 +60,9 @@ def main_menu(result):
                 print(f"\t5) {l.msg("Ship Placement Type")}\t\t{status[3]} ({l.msg("for ex.")} {"A1 E1" if status[3] == "1" else "A1 > 5"})")
                 print(f"\t6) {l.msg("Method to Place Ships")}\t{l.msg(status[4])}")
                 print(f"\t7) {l.msg("Bot Name")}\t\t\t{l.msg(status[5])}")
-                print(f"\t8) {l.msg("Exit")}\t\t\t\t{l.msg("NO")}")
+                print(f"\t8) {l.msg("User Name")}\t\t\t{l.msg(status[6])} {"(" if status[6] == -1 else ""}{l.msg("without user" if status[6] == -1 else "")}" + 
+                      f"{")" if status[6] == -1 else ""}")
+                print(f"\t9) {l.msg("Exit")}\t\t\t\t{l.msg("NO")}")
 
                 print(l.msg("Which option do you want to change?"))
                 while True:
@@ -70,16 +73,17 @@ def main_menu(result):
                         break
 
                 if choice == "1":
-                    #   0       1       2     3       4      5        6      7       8         9        10     11
-                    # [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, menu]
+                    #   0       1       2     3       4      5        6      7       8         9        10     11    12
+                    # [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, name, menu]
                     result[4] = False if status[0] == "no" else True # random
                     result[6] = status[1]
                     result[7] = status[2]
                     result[8] = status[3]
                     result[9] = status[5]
                     result[10] = status[4]
+                    result[11] = status[6]
                     normal_start(result)
-                    status = ["no", "en", "player", "1 (for ex. A1 EI)", "1111222334", "harpooner"]
+                    status = ["no", "en", "player", "1 (for ex. A1 EI)", "1111222334", "harpooner", -1]
                     break
                 elif choice == "2":
                     while True:
@@ -140,6 +144,15 @@ def main_menu(result):
                                                                                                             "harpooner", "navigator",
                                                                                                             "admiral", "master_seawolf"] else choice
                 elif choice == "8":
+                    while True:
+                        choice = input(f"{l.msg("What do you want to exchange it for?")} [-1/...] ")
+                        if choice == "-1":
+                            status[6] = int(choice)
+                            break
+                        else:
+                            status[6] = choice
+                            break
+                elif choice == "9":
                     print(l.msg("Exit"))
                     break
             
@@ -158,18 +171,19 @@ def help_cmd():
     print()
     print(f"{l.msg("flag")}{l.msg("full version")}{l.msg("info")}{l.msg("default value")}")
     print(f"-"*75)
-    print(f"-h\t--help\t\t{l.msg("help with commands")}False")
-    print(f"-v\t--version\t{l.msg("game version")}False")
-    print(f"-f\t--fast\t\t{l.msg("fast start")}False")
+    print(f"-h\t--help\t\t{l.msg("help with commands")}{l.msg("False")}")
+    print(f"-v\t--version\t{l.msg("game version")}{l.msg("False")}")
+    print(f"-f\t--fast\t\t{l.msg("fast start")}{l.msg("False")}")
     print(f"\t\t\t{l.msg("(automatic set -c -r -s 1 -m 1111222334 -b harpooner -t player)")}")
-    print(f"-c\t--clear\t\t{l.msg("clear console before the game")}False")
-    print(f"-r\t--random\t{l.msg("random placement ships")}False")
+    print(f"-c\t--clear\t\t{l.msg("clear console before the game")}{l.msg("False")}")
+    print(f"-r\t--random\t{l.msg("random placement ships")}{l.msg("False")}")
     print(f"-d\t--debug\t\t{l.msg("special debug for developers")}")
     print(f"-l\t--language\t{l.msg("game language [ru/en]")}en")
     print(f"-t\t--turn\t\t{l.msg("1st player")}player")
     print(f"-s\t--set-ship\t{l.msg("ship placement type")}1")
     print(f"-b\t--bot\t\t{l.msg("type of bot")}harpooner")
     print(f"-m\t--method\t{l.msg("method to place ships")}1111222334")
+    print(f"-u\t--user\t\t{l.msg("select user to play")}-1 ({l.msg("without user")})")
 
 def version():
     print(f"Sea Battle\tActual: {get_latest_tag_master()}\n\t\tNewest: {get_latest_tag_over_all_time()}")
@@ -202,18 +216,23 @@ def parse():
     set_ship = get_arg('-s', '--set-ship', '1')
     bot_name = get_arg('-b', '--bot', 'harpooner')
     method = get_arg('-m', '--method', '1111222334')
+    name = get_arg('-u', '--user', -1)
 
     menu = not any([help, version, fast, random, debug, flag_in_cmd("-t", "--turn", c),
                     flag_in_cmd("-s", "--set-ship", c), flag_in_cmd("-b", "--bot", c),
-                    flag_in_cmd("-m", "--method", c)])
+                    flag_in_cmd("-m", "--method", c), flag_in_cmd("-u", "--user", c)])
 
-    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, menu]
+    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, name, menu]
 
 if __name__ == "__main__":
     result = parse()
 
     l.LANGUAGE = result[6] # --language
     if result[3]: os.system("clear") # --clear
+
+    if not user.exist_user(result[11]):
+        user.add_user(result[11])
+    name = result[11]
 
     if result[-1]: # menu
         main_menu(result)

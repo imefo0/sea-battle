@@ -573,8 +573,9 @@ def evil_admiral(field, ships): # он пока будет в коде но не
                     break
     return True
 
-def master_seawolf(field, ships, name): # мастер Морской волк, карта + история
+def master_seawolf(field, ships, name=-1): # мастер Морской волк, карта + история
     log("master_seawolf")
+    log(f"игрок: {name}")
     while True:
         res = True
         for i in field:
@@ -584,9 +585,12 @@ def master_seawolf(field, ships, name): # мастер Морской волк, 
         history_map = [[0]*10 for _ in range(10)]
         admiral_map = [[0]*10 for _ in range(10)]
         
-        log("сборка карты истории игрока")
-        for x, y in user.get_player_shots(name):
-            history_map[y][x] += 1  # увеличиваем счётчик
+        if name != -1:
+            log("сборка карты истории игрока")
+            for x, y in user.get_player_shots(name):
+                history_map[y][x] += 1  # увеличиваем счётчик
+        else:
+            log("без игрока")
 
         # for i in range(len(heat_map)):
         #     for j in heat_map[i]:
