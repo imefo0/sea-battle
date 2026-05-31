@@ -217,22 +217,21 @@ def parse():
     bot_name = get_arg('-b', '--bot', 'harpooner')
     method = get_arg('-m', '--method', '1111222334')
     name = get_arg('-u', '--user', -1)
+    new = get_arg('-n', '--new-user', -1)
+    delete = get_arg('-d', '--delete-user', -1)
 
     menu = not any([help, version, fast, random, debug, flag_in_cmd("-t", "--turn", c),
                     flag_in_cmd("-s", "--set-ship", c), flag_in_cmd("-b", "--bot", c),
-                    flag_in_cmd("-m", "--method", c), flag_in_cmd("-u", "--user", c)])
+                    flag_in_cmd("-m", "--method", c), flag_in_cmd("-u", "--user", c)], 
+                    flag_in_cmd("-n", "--new-user", c), flag_in_cmd("-d", "--delete-user", c))
 
-    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, name, menu]
+    return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, name, new, delete, menu]
 
 if __name__ == "__main__":
     result = parse()
 
     l.LANGUAGE = result[6] # --language
     if result[3]: os.system("clear") # --clear
-
-    if not user.exist_user(result[11]):
-        user.add_user(result[11])
-    name = result[11]
 
     if result[-1]: # menu
         main_menu(result)
@@ -247,6 +246,15 @@ if __name__ == "__main__":
             exit(0)
         elif result[0]: help_cmd(); exit(0) # --help
         elif result[1]: version(); exit(0) # --version
+
+        if result[13] != -1: # --delete-user
+            user.remove_user(result[13])
+
+        if result[12] != -1: # --new-user
+            user.add_user(result[12])
+
+        if not user.exist_user(result[11]): # --user
+            print("this user does not exist")
 
         if result[4]: # --random
             print("random ship placement will be added after 1.0.0")
