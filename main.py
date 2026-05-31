@@ -98,6 +98,9 @@ def parse(command: str, set_ship: str):
         cmds[-1] = int(cmds[-1])
         cmds[0][1] = int(cmds[0][1]) - 1
         return cmds # [[0, 0], ">", 5]
+    elif set_ship == "3": # A1
+        return [(ru_words_to_parse.index(command[0]) if command[0] in ru_words_to_parse else en_words_to_parse.index(command[0])), 
+                int(command[1:]) - 1] # [0, 0]
     
 
 # печатаем поле
@@ -315,7 +318,7 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
                 print_field(player_field, player_radar)
                 if set_ship == "1":
                     while True:
-                        cmd = parse(input(), "1")
+                        cmd = parse(input("> "), "1")
                         # raw_cell1, raw_cell2 = input().split(" ")
                         # cell1 = [int(i) for i in raw_cell1.split(",")]
                         # cell2 = [int(i) for i in raw_cell2.split(",")]
@@ -325,7 +328,7 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
 
                 elif set_ship == "2":
                     while True:
-                        cmd = parse(input(), "2")
+                        cmd = parse(input("> "), "2")
                         # raw_cell, dir, num = input().split(" ")
                         # cell = [int(i) for i in raw_cell.split(",")]
 
@@ -358,8 +361,8 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
                 # print_field(bot_field, bot_radar)
 
                 while True:
-                    cell = [int(i) for i in input().split(",")]
-                    result = fire(player_radar, cell)
+                    cmd = parse(input("> "), "3")
+                    result = fire(player_radar, cmd)
                     if result[0]:
                         break
                     else: print(msg("incorrect input"))
