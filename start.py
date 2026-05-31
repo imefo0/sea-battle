@@ -222,8 +222,8 @@ def parse():
 
     menu = not any([help, version, fast, random, debug, flag_in_cmd("-t", "--turn", c),
                     flag_in_cmd("-s", "--set-ship", c), flag_in_cmd("-b", "--bot", c),
-                    flag_in_cmd("-m", "--method", c), flag_in_cmd("-u", "--user", c)], 
-                    flag_in_cmd("-n", "--new-user", c), flag_in_cmd("-d", "--delete-user", c))
+                    flag_in_cmd("-m", "--method", c), flag_in_cmd("-u", "--user", c), 
+                    flag_in_cmd("-n", "--new-user", c), flag_in_cmd("-d", "--delete-user", c)])
 
     return [help, version, fast, clear, random, debug, language, turn, set_ship, bot_name, method, name, new, delete, menu]
 
