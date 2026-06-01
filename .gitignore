@@ -10,3 +10,5 @@ users/
 bulid/
 dist/
 *.spec
+
+venv/
