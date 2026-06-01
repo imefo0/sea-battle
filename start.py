@@ -21,34 +21,28 @@ import language as l
 import debug
 import user
 
-def get_latest_tag_master():
+def get_version():
     try:
-        return subprocess.check_output(
-            ['git', 'describe', '--tags', '--abbrev=0', 'master'],
-            text=True,
-            stderr=subprocess.DEVNULL
-        ).strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return "unknown"
-
-def get_latest_tag_over_all_time():
-    try:
-        result = subprocess.check_output(
-            "git tag --sort=-creatordate | head -1",
-            shell=True,
-            text=True,
-            stderr=subprocess.DEVNULL
-        ).strip()
-        return result if result else "unknown"
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return "unknown"
+        # Для PyInstaller
+        if getattr(sys, 'frozen', False):
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.path.dirname(__file__)
+        
+        with open(os.path.join(base_path, 'version.txt'), 'r') as f:
+            lines = f.read().strip().split('\n')
+            actual = lines[0] if len(lines) > 0 else "unknown"
+            newest = lines[1] if len(lines) > 1 else actual
+            return actual, newest
+    except (FileNotFoundError, IndexError):
+        return "unknown", "unknown"
 
 def main_menu(result):
     distance = 20
     #         random lang   turn  set_ship  method      bot
     status = ["no", result[6], "player", "1", "1111222334", "harpooner", -1]
     while True:
-        print("-"*distance, l.msg("Sea Battle"), get_latest_tag_master(), "-"*distance)
+        print("-"*distance, l.msg("Sea Battle"), get_version()[0], "-"*distance)
         print(f"\t1) {l.msg("New Game")}")
         print(f"\t2) {l.msg("Settings")}")
         print(f"\t3) {l.msg("Quit")}")
@@ -204,7 +198,7 @@ def help_cmd():
     print(f"-R\t--remove-user\t{l.msg("removing user")}\t\t\t{l.msg("False")}")
 
 def version():
-    print(f"Sea Battle\tActual: {get_latest_tag_master()}\n\t\tNewest: {get_latest_tag_over_all_time()}")
+    print(f"Sea Battle\tActual: {get_version()[0]}\n\t\tNewest: {get_version()[1]}")
 
 def flag_in_cmd(short_flag, long_flag, cmd) -> bool:
     return short_flag in cmd or long_flag in cmd
@@ -256,7 +250,6 @@ if __name__ == "__main__":
     else:
         debug.DEBUG = result[5] # --debug
         # print(result)
-
 
         if result[0] and result[1]: # --help --vesion
             help_cmd()
