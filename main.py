@@ -334,22 +334,28 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
                 print_field(player_field, player_radar)
                 if set_ship == "1":
                     while True:
-                        cmd = parse(input("> "), "1")
-                        # raw_cell1, raw_cell2 = input().split(" ")
-                        # cell1 = [int(i) for i in raw_cell1.split(",")]
-                        # cell2 = [int(i) for i in raw_cell2.split(",")]
+                        try:
+                            cmd = parse(input("> "), "1")
+                            # raw_cell1, raw_cell2 = input().split(" ")
+                            # cell1 = [int(i) for i in raw_cell1.split(",")]
+                            # cell2 = [int(i) for i in raw_cell2.split(",")]
 
-                        if set_ship1(*cmd, player_field, player_ships, 1, int(i)): break
-                        else: print("incorrect input")
+                            if set_ship1(*cmd, player_field, player_ships, 1, int(i)): break
+                            else: print(msg("incorrect input"))
+                        except:
+                            print(msg("incorrect input"))
 
                 elif set_ship == "2":
                     while True:
-                        cmd = parse(input("> "), "2")
-                        # raw_cell, dir, num = input().split(" ")
-                        # cell = [int(i) for i in raw_cell.split(",")]
+                        try:
+                            cmd = parse(input("> "), "2")
+                            # raw_cell, dir, num = input().split(" ")
+                            # cell = [int(i) for i in raw_cell.split(",")]
 
-                        if set_ship2(*cmd, player_field, player_ships, 1, int(i)): break
-                        else: print("iccorect input")
+                            if set_ship2(*cmd, player_field, player_ships, 1, int(i)): break
+                            else: print("iccorect input")
+                        except:
+                            print(msg("incorrect input"))
 
                 else:
                     print(msg("incorrect set-ship value"))
@@ -377,11 +383,14 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
                 # print_field(bot_field, bot_radar)
 
                 while True:
-                    cmd = parse(input("> "), "3")
-                    result = fire(player_radar, cmd)
-                    if result[0]:
-                        break
-                    else: print(msg("incorrect input"))
+                    try:
+                        cmd = parse(input("> "), "3")
+                        result = fire(player_radar, cmd)
+                        if result[0]:
+                            break
+                        else: print(msg("incorrect input"))
+                    except:
+                        print(msg("incorrect input"))
                 
                 if not result[1]:
                     log("промах")
