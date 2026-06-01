@@ -261,9 +261,9 @@ if __name__ == "__main__":
         if result[0] and result[1]: # --help --vesion
             help_cmd()
             version()
-            exit(0)
-        elif result[0]: help_cmd(); exit(0) # --help
-        elif result[1]: version(); exit(0) # --version
+            sys.exit(0)
+        elif result[0]: help_cmd(); sys.exit(0) # --help
+        elif result[1]: version(); sys.exit(0) # --version
 
         if result[13] != -1: # --remove-user
             user.remove_user(result[13])
