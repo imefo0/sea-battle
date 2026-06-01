@@ -28,7 +28,6 @@ import user
 
 heat_map = [[0]*10 for _ in range(10)]
 
-
 # searching - поиск через рандом
 # attack - атака
 harpooner_mode = "searching"
@@ -38,6 +37,18 @@ evil_admiral_mode = "searching"
 navigator_map = []
 
 directions = [
+    (1, 0), (-1, 0),
+    (0, 1), (0, -1)
+]
+harpooner_directions = [
+    (1, 0), (-1, 0),
+    (0, 1), (0, -1)
+]
+navigator_directions = [
+    (1, 0), (-1, 0),
+    (0, 1), (0, -1)
+]
+evil_admiral_directions = [
     (1, 0), (-1, 0),
     (0, 1), (0, -1)
 ]
@@ -152,15 +163,15 @@ def set_ships(field: list[list[int]], ships, placement_method: list[str]) -> boo
                 break
     return True
 
-def attack_mode(field, ships, bot) -> list[str, bool]: # для harpooner, navigator
+def attack_mode(field, ships, bot, directions) -> list[str, bool]: # для harpooner, navigator
     log("attack_mode")
-    global directions, harpooner_mode, navigator_mode, evil_admiral_mode, x, y
+    global harpooner_mode, navigator_mode, evil_admiral_mode, x, y
+
     # import pdb; pdb.set_trace()
     while True:
-        if x - 1 < 0 and (-1, 0) in directions: directions.remove((-1, 0))
-        if x + 1 > 9 and (1, 0) in directions: directions.remove((1, 0))
-        if y - 1 < 0 and (0, -1) in directions: directions.remove((0, -1))
-        if y + 1 > 9 and (0, 1) in directions: directions.remove((0, 1))
+        for (dx, dy, cond) in [(-1,0, x<1), (1,0, x>8), (0,-1, y<1), (0,1, y>8)]:
+            if cond and (dx, dy) in directions:
+                directions.remove((dx, dy))
 
         # выборка направления
         dx, dy = random.choice(directions) 
@@ -275,7 +286,7 @@ def greenhorn(field, ships): # юнга, рандом
 
 def harpooner(field, ships): # гаупунер, охотник
     log("harpooner")
-    global directions, harpooner_mode, x, y
+    global harpooner_directions, harpooner_mode, x, y
 
     while True:
         #import pdb; pdb.set_trace()
@@ -330,7 +341,7 @@ def harpooner(field, ships): # гаупунер, охотник
     
         elif harpooner_mode == "attack":
             log("бот уже нашел корабль и атакует")
-            result = attack_mode(field, ships, "harpooner")
+            result = attack_mode(field, ships, "harpooner", harpooner_directions)
             if result[1]:
                 if result[0] == "continue":
                     continue
@@ -340,7 +351,7 @@ def harpooner(field, ships): # гаупунер, охотник
 
 def navigator(field, ships): # штурман, шахматный
     log("navigator")
-    global directions, navigator_mode, x, y
+    global navigator_directions, navigator_mode, x, y
 
     while True:
         #import pdb; pdb.set_trace()
@@ -401,7 +412,7 @@ def navigator(field, ships): # штурман, шахматный
         
         elif navigator_mode == "attack":
             log("бот уже нашел корабль и идет атаковать")
-            result = attack_mode(field, ships, "navigator")
+            result = attack_mode(field, ships, "navigator", navigator_directions)
             if result[1]:
                 if result[0] == "continue":
                     continue
@@ -495,7 +506,7 @@ def admiral(field, ships): # адмирал, тепловая карта
 
 def evil_admiral(field, ships): # он пока будет в коде но не использоваться или замена адмирала но это будет злой
     log("evil_admiral")
-    global directions, evil_admiral_mode, x, y
+    global evil_admiral_directions, evil_admiral_mode, x, y
     while True:
         res = True
         for i in field:
@@ -581,7 +592,7 @@ def evil_admiral(field, ships): # он пока будет в коде но не
                 del pos[point]
                 continue
         elif evil_admiral_mode == "attack":
-            result = attack_mode(field, ships, "evil_admiral")
+            result = attack_mode(field, ships, "evil_admiral", evil_admiral_directions)
             if result[1]:
                 if result[0] == "continue":
                     continue
