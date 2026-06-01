@@ -6,3 +6,7 @@ __pycache__/
 *.json
 
 users/
+
+bulid/
+dist/
+*.spec
