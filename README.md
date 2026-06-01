@@ -38,7 +38,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Fast installing
 
-> git clone https://github.com/imefo/sea-battle.git
+> git clone https://github.com/imefo0/sea-battle.git
 > cd sea-battle
 > python3 start.py
 
