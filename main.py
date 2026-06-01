@@ -342,6 +342,9 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
 
                             if set_ship1(*cmd, player_field, player_ships, 1, int(i)): break
                             else: print(msg("incorrect input"))
+                        except KeyboardInterrupt:
+                            print(msg("Quit"))
+                            return
                         except:
                             print(msg("incorrect input"))
 
@@ -354,6 +357,9 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
 
                             if set_ship2(*cmd, player_field, player_ships, 1, int(i)): break
                             else: print("iccorect input")
+                        except KeyboardInterrupt:
+                            print(msg("Quit"))
+                            return
                         except:
                             print(msg("incorrect input"))
 
@@ -389,6 +395,9 @@ def start(turn, set_ship, bot_name, placement_method, name=-1):
                         if result[0]:
                             break
                         else: print(msg("incorrect input"))
+                    except KeyboardInterrupt:
+                            print(msg("Quit"))
+                            return
                     except:
                         print(msg("incorrect input"))
                 
