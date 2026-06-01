@@ -48,7 +48,7 @@ def main_menu(result):
     #         random lang   turn  set_ship  method      bot
     status = ["no", result[6], "player", "1", "1111222334", "harpooner", -1]
     while True:
-        print("-"*distance, l.msg("Sea Battle"), "-"*distance)
+        print("-"*distance, l.msg("Sea Battle"), get_latest_tag_master(), "-"*distance)
         print(f"\t1) {l.msg("New Game")}")
         print(f"\t2) {l.msg("Settings")}")
         print(f"\t3) {l.msg("Quit")}")
