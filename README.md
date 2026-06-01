@@ -58,6 +58,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 > python3 start.py [`-c`] [`-d`] [`-f`] [`-r`] [`-b БОТ`] [`-t ХОД`] [`-s РЕЖИМ`] [`-m МЕТОД`] [`-l ЯЗЫК`]
 
+```
 **-h** --help: справка по командам
 **-v** --version: показать версию игры
 **-f** --fast: быстрый старт (автоматически -c -r -s 1 -m 1111222334 -b harpooner -t player)
@@ -74,6 +75,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 **-R** --remove-user: удалить пользователя, но заходить в игру как -1 
 *-e* --emoji: вид поля из эмоджи (Пока не добавлен)
 *-C* --cli: вид поля из ASCII символов (Пока не добавлен)
+```
 
 > **Примечание:** Флаги `-e` и `-C` находятся в разработке.
 
